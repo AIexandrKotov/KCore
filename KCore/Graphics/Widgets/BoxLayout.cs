@@ -1,0 +1,105 @@
+﻿using KCore.Extensions;
+using KCore.Graphics.Containers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KCore.Graphics.Widgets
+{
+    public class BoxLayout : BoundedObject, INestedWidgets, IWidget
+    {
+        public enum BoxOrientation
+        {
+            Horizontal,
+            Vertical,
+        }
+
+        public BoxLayout(
+            BoxOrientation? orientation = null,
+            List<BoundedObject> widgets = null,
+
+            int left = 0, int top = 0, IContainer container = null, Alignment? alignment = null)
+            : base(left, top, container, alignment)
+        {
+            Widgets = widgets ?? new List<BoundedObject>();
+            Orientation = orientation ?? BoxOrientation.Horizontal;
+        }
+
+        public override int Width => Container.Width;
+        public override int Height => Container.Height;
+
+        public BoxOrientation Orientation;
+        public List<BoundedObject> Widgets;
+
+        public void UpdateSizes()
+        {
+            if (Widgets.Count == 0) return;
+            var value = Orientation == BoxOrientation.Vertical ? Container.Height : Container.Width;
+            var containers_sizes = Enumerable.Repeat(value / Widgets.Count, Widgets.Count).ToArray();
+            var rest = value - containers_sizes.Sum();
+            for (var i = 0; rest > 0; rest--)
+                containers_sizes[i++]++;
+
+            var containers = Orientation == BoxOrientation.Vertical
+                ? containers_sizes.ConvertAll(x => new StaticContainer(0, 0, Width, x))
+                : containers_sizes.ConvertAll(x => new StaticContainer(0, 0, x, Height));
+
+            var sum = 0;
+            for (var i = 1; i < containers.Length; i++)
+            {
+                if (Orientation == BoxOrientation.Vertical)
+                {
+                    sum += containers[i - 1].Height;
+                    containers[i].Top = sum;
+                }
+                else
+                {
+                    sum += containers[i - 1].Width;
+                    containers[i].Left = sum;
+                }
+            }
+
+            for (var i = 0; i < containers.Length; i++)
+            {
+                containers[i].Left += (this as IContainer).Left;
+                containers[i].Top += (this as IContainer).Top;
+                Widgets[i].Container = containers[i];
+                if (Widgets[i] is IWidget widget)
+                    widget.UpdateSizes();
+            }
+        }
+
+        public override (int, int) Draw(int left, int top)
+        {
+            for (var i = 0; i < Widgets.Count; i++)
+                Widgets[i].Draw();
+            return (left, top);
+        }
+
+        public override (int, int) Clear(int left, int top)
+        {
+            for (var i = 0; i < Widgets.Count; i++)
+                Widgets[i].Clear();
+            return (left, top);
+        }
+
+        public void AddWidget(BoundedObject o)
+        {
+            Widgets.Add(o);
+            UpdateSizes();
+        }
+
+        public void RemoveWidget(BoundedObject o)
+        {
+            Widgets.Add(o);
+            UpdateSizes();
+        }
+
+        public void ClearWidgets()
+        {
+            Widgets.Clear();
+        }
+    }
+}

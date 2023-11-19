@@ -1,0 +1,1 @@
+"../building/vh.exe" "../KCore/Properties/AssemblyInfo.cs" "revision++"

@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FE2FBEFB-28CC-4928-B11B-D22BD7DFE137}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KCore</RootNamespace>
+    <AssemblyName>KCore</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CoreForms\Dashboard.cs" />
+    <Compile Include="CoreForms\ExceptionViewer.cs" />
+    <Compile Include="CoreForms\ResizeViewer.cs" />
+    <Compile Include="Extensions\GenericExtensions.cs" />
+    <Compile Include="Extensions\NumericExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Forms\Form.cs" />
+    <Compile Include="Forms\SimpleEventForm.cs" />
+    <Compile Include="Forms\BaseForm.cs" />
+    <Compile Include="Graphics\Alignment.cs" />
+    <Compile Include="Graphics\Containers\DynamicContainer.cs" />
+    <Compile Include="Graphics\Containers\StaticContainer.cs" />
+    <Compile Include="Graphics\Containers\TerminalContainer.cs" />
+    <Compile Include="Graphics\Core\Chars.cs" />
+    <Compile Include="Graphics\Core\Complexive.cs" />
+    <Compile Include="Graphics\Core\ComplexPixel.cs" />
+    <Compile Include="Graphics\Core\ComplexPixelLine.cs" />
+    <Compile Include="Graphics\Core\Line.cs" />
+    <Compile Include="Graphics\Core\MediaComplexive.cs" />
+    <Compile Include="Graphics\Core\Primitive.cs" />
+    <Compile Include="Graphics\GraphicsExtensions.cs" />
+    <Compile Include="Graphics\BoundedObject.cs" />
+    <Compile Include="Graphics\Special\TextInput.cs" />
+    <Compile Include="Graphics\Uncontrolable\Graph.cs" />
+    <Compile Include="Graphics\IDrawable.cs" />
+    <Compile Include="Graphics\Uncontrolable\MediaRectangle.cs" />
+    <Compile Include="Graphics\SuperText.cs" />
+    <Compile Include="Graphics\TextAlignment.cs" />
+    <Compile Include="Graphics\IContainer.cs" />
+    <Compile Include="Graphics\TransitionAnimation.cs" />
+    <Compile Include="Graphics\Widgets\BoxLayout.cs" />
+    <Compile Include="Graphics\Widgets\IControlable.cs" />
+    <Compile Include="Graphics\Widgets\INestedWidgets.cs" />
+    <Compile Include="Graphics\Widgets\IWidget.cs" />
+    <Compile Include="Graphics\Widgets\Row.cs" />
+    <Compile Include="Graphics\Widgets\TextRow.cs" />
+    <Compile Include="Graphics\Widgets\Window.cs" />
+    <Compile Include="Key.cs" />
+    <Compile Include="Forms\Reaction.cs" />
+    <Compile Include="TerminalCore\TerminalBase.cs" />
+    <Compile Include="TerminalCore\TerminalRedirected.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TerminalCore\Terminal.cs" />
+    <Compile Include="Theming\Theme.cs" />
+    <Compile Include="Theming\ColorTheme.cs" />
+    <Compile Include="Theming\Themes.cs" />
+    <Compile Include="Tools\Inifile.cs" />
+    <Compile Include="Tools\Log.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="lucida_mixmult.ini" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>../building/IncRevision.bat</PreBuildEvent>
+  </PropertyGroup>
+</Project>
