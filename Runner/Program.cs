@@ -9,8 +9,9 @@ namespace Runner
         public static void Main(string[] args)
         {
             var f = new SimpleEventForm();
-            f.AllRedraw += () => f.StartAnimation(new Form2());
+            f.AllRedraw += () => f.StartAnimation(new Form3());
             f.Start();
+            Terminal.Abort();
         }
     }
 }

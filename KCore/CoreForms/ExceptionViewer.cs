@@ -3,7 +3,7 @@ using System;
 
 namespace KCore.CoreForms
 {
-    public class ExceptionViewer : BaseForm
+    public class ExceptionViewer : Form
     {
         public static string[] Description = new string[]
         {

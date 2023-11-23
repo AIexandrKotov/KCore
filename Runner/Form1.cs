@@ -13,27 +13,25 @@ namespace Runner
 {
     public class Form1 : Form
     {
-        public TextRow Row { get; set; }
+        public Redrawable Row { get; set; }
+        public TextRow TextRow { get; set; }
         public TextInput TextInput { get; set; }
 
         public Form1()
         {
-            Row = new TextRow(fillWidth: true, text: "%=>Red%Super%=>reset%row");
+            TextRow = new TextRow(fillWidth: true, text: "%=>Red%Super%=>reset%row");
 
+            RootWidget = Row = new Redrawable(TextRow);
             ActiveWidget = TextInput = new TextInput(this);
 
-            TextInput.OnAnyInput = () => Row.Text = TextInput.String;
-            TextInput.Activate(Row.Text);
+            AddRedrawer(Row);
 
-            AddRedrawer(Redraw);
-            TextInput.RedrawMethod = Redraw;
+            TextInput.OnAnyInput = () =>
+            {
+                TextRow.Text = TextInput.String;
+                Row.NeedRedraw = true;
+            };
+            TextInput.Activate(TextRow.Text);
         }
-
-        public void Redraw()
-        {
-            Row.Draw();
-        }
-
-        protected override void OnAllRedraw() => Redraw();
     }
 }

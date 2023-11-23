@@ -74,7 +74,7 @@ namespace KCore.Graphics
         public static void PrintSuperText(this string text, IContainer container, Func<(ConsoleColor, ConsoleColor)> ResetColorRedirect = null, TextAlignment alignment = TextAlignment.Left)
         {
             if (ResetColorRedirect == null) ResetColorRedirect = SuperText.DefaultResetColorRedirect;
-            text.GetSuperText(container, ResetColorRedirect, alignment).PrintSuperText();
+            text.GetSuperText(container, ResetColorRedirect, alignment).PrintSuperText(container);
         }
 
         public static IEnumerable<SuperText> GetSuperText(this string text, IContainer container, Func<(ConsoleColor, ConsoleColor)> ResetColorRedirect = null, TextAlignment alignment = TextAlignment.Left)
@@ -98,9 +98,16 @@ namespace KCore.Graphics
             return Pixels.Select(x => new ComplexPixel(x.PositionLeft + left, x.PositionTop + top, x.Character, x.ForegroundColor, x.BackgroundColor));
         }
 
-        public static void PrintSuperText(this IEnumerable<SuperText> text)
+        public static void PrintSuperText(this IEnumerable<SuperText> text, IContainer container = null)
         {
-            foreach (var x in text) x.Invoke();
+            if (container == null) container = TerminalContainer.This;
+            foreach (var x in text)
+            {
+                if ((x is SuperText.SuperTextOut sto) && (sto.Position.Item1 + x.CachedCorner.Item1 < container.Left || sto.Position.Item1 + x.CachedCorner.Item1 >= (container.Left + container.Width)
+                 || sto.Position.Item2 + x.CachedCorner.Item2 < container.Top || sto.Position.Item2 + x.CachedCorner.Item2 >= (container.Top + container.Height)
+                 || sto.Text.Length + sto.Position.Item1 + x.CachedCorner.Item1 > container.Width + container.Left)) break;
+                x.Invoke();
+            }
         }
 
         public static Complexive GetEmptyAnalog(this Complexive complexive)
@@ -109,7 +116,7 @@ namespace KCore.Graphics
         }
 
 
-        public static void StartAnyAnimations(this BaseForm BaseForm, BaseForm other, params Action<TerminalRedirected.DrawingRedirection>[] actions)
+        public static void StartAnyAnimations(this Form BaseForm, Form other, params Action<TerminalRedirected.DrawingRedirection>[] actions)
         {
             var red = GetDrawingRedirection(other);
             for (var i = 0; i < actions.Length; i++)
@@ -117,14 +124,14 @@ namespace KCore.Graphics
             BaseForm.Start(other, true);
         }
 
-        public static void StartAnyAnimations(this BaseForm BaseForm, BaseForm other, Action<TerminalRedirected.DrawingRedirection> action1)
+        public static void StartAnyAnimations(this Form BaseForm, Form other, Action<TerminalRedirected.DrawingRedirection> action1)
         {
             var red = GetDrawingRedirection(other);
             action1.Invoke(red);
             BaseForm.Start(other, true);
         }
 
-        public static void StartAnyAnimations(this BaseForm BaseForm, BaseForm other, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2)
+        public static void StartAnyAnimations(this Form BaseForm, Form other, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2)
         {
             var red = GetDrawingRedirection(other);
             action1.Invoke(red);
@@ -132,7 +139,7 @@ namespace KCore.Graphics
             BaseForm.Start(other, true);
         }
 
-        public static void StartAnyAnimations(this BaseForm BaseForm, BaseForm other, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2, Action<TerminalRedirected.DrawingRedirection> action3)
+        public static void StartAnyAnimations(this Form BaseForm, Form other, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2, Action<TerminalRedirected.DrawingRedirection> action3)
         {
             var red = GetDrawingRedirection(other);
             action1.Invoke(red);
@@ -141,7 +148,7 @@ namespace KCore.Graphics
             BaseForm.Start(other, true);
         }
 
-        public static void StartAnyAnimationsNotClear(this BaseForm BaseForm, BaseForm other, params Action<TerminalRedirected.DrawingRedirection>[] actions)
+        public static void StartAnyAnimationsNotClear(this Form BaseForm, Form other, params Action<TerminalRedirected.DrawingRedirection>[] actions)
         {
             var red = GetDrawingRedirection(other);
             for (var i = 0; i < actions.Length; i++)
@@ -149,14 +156,14 @@ namespace KCore.Graphics
             BaseForm.Start(other, true, true);
         }
 
-        public static void StartAnyAnimationsNotClear(this BaseForm BaseForm, BaseForm other, Action<TerminalRedirected.DrawingRedirection> action1)
+        public static void StartAnyAnimationsNotClear(this Form BaseForm, Form other, Action<TerminalRedirected.DrawingRedirection> action1)
         {
             var red = GetDrawingRedirection(other);
             action1.Invoke(red);
             BaseForm.Start(other, true, true);
         }
 
-        public static void StartAnyAnimationsNotClear(this BaseForm BaseForm, BaseForm other, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2)
+        public static void StartAnyAnimationsNotClear(this Form BaseForm, Form other, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2)
         {
             var red = GetDrawingRedirection(other);
             action1.Invoke(red);
@@ -164,7 +171,7 @@ namespace KCore.Graphics
             BaseForm.Start(other, true, true);
         }
 
-        public static void StartAnyAnimationsNotClear(this BaseForm BaseForm, BaseForm other, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2, Action<TerminalRedirected.DrawingRedirection> action3)
+        public static void StartAnyAnimationsNotClear(this Form BaseForm, Form other, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2, Action<TerminalRedirected.DrawingRedirection> action3)
         {
             var red = GetDrawingRedirection(other);
             action1.Invoke(red);
@@ -173,7 +180,7 @@ namespace KCore.Graphics
             BaseForm.Start(other, true, true);
         }
 
-        public static void ReturnAnyAnimations(this BaseForm BaseForm, params Action<TerminalRedirected.DrawingRedirection>[] actions)
+        public static void ReturnAnyAnimations(this Form BaseForm, params Action<TerminalRedirected.DrawingRedirection>[] actions)
         {
             var red = GetDrawingRedirection(BaseForm, true);
             for (var i = 0; i < actions.Length; i++)
@@ -181,14 +188,14 @@ namespace KCore.Graphics
             BaseForm.StopAllRedraw();
         }
 
-        public static void ReturnAnyAnimations(this BaseForm BaseForm, Action<TerminalRedirected.DrawingRedirection> action1)
+        public static void ReturnAnyAnimations(this Form BaseForm, Action<TerminalRedirected.DrawingRedirection> action1)
         {
             var red = GetDrawingRedirection(BaseForm, true);
             action1.Invoke(red);
             BaseForm.StopAllRedraw();
         }
 
-        public static void ReturnAnyAnimations(this BaseForm BaseForm, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2)
+        public static void ReturnAnyAnimations(this Form BaseForm, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2)
         {
             var red = GetDrawingRedirection(BaseForm, true);
             action1.Invoke(red);
@@ -196,7 +203,7 @@ namespace KCore.Graphics
             BaseForm.StopAllRedraw();
         }
 
-        public static void ReturnAnyAnimations(this BaseForm BaseForm, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2, Action<TerminalRedirected.DrawingRedirection> action3)
+        public static void ReturnAnyAnimations(this Form BaseForm, Action<TerminalRedirected.DrawingRedirection> action1, Action<TerminalRedirected.DrawingRedirection> action2, Action<TerminalRedirected.DrawingRedirection> action3)
         {
             var red = GetDrawingRedirection(BaseForm, true);
             action1.Invoke(red);
@@ -215,7 +222,7 @@ namespace KCore.Graphics
 
         private static TransitionAnimation.Preset GetStart(bool horizontal = false) => horizontal ? TransitionAnimation.Preset.FromTheTop : TransitionAnimation.Preset.FromTheRight;
         private static TransitionAnimation.Preset GetReturn(bool horizontal = false) => horizontal ? TransitionAnimation.Preset.FromTheBottom : TransitionAnimation.Preset.FromTheLeft;
-        public static void RealizeAnimation(this BaseForm b, BaseForm other, bool horizontal = false)
+        public static void RealizeAnimation(this Form b, Form other, bool horizontal = false)
         {
             if (AllowTransitionAnimations)
             {
@@ -262,7 +269,7 @@ namespace KCore.Graphics
             }
         }
 */
-        public static void StartAnimation(this BaseForm b, BaseForm other, bool horizontal = false)
+        public static void StartAnimation(this Form b, Form other, bool horizontal = false)
         {
             if (AllowTransitionAnimations)
             {
@@ -274,7 +281,7 @@ namespace KCore.Graphics
             }
         }
 
-        public static void StartAnimation(this BaseForm other, bool horizontal = false)
+        public static void StartAnimation(this Form other, bool horizontal = false)
         {
             if (AllowTransitionAnimations)
             {
@@ -288,7 +295,7 @@ namespace KCore.Graphics
             }
         }
 
-        public static void StartAnimationNotClear(this BaseForm b, BaseForm other, bool horizontal = false)
+        public static void StartAnimationNotClear(this Form b, Form other, bool horizontal = false)
         {
             if (AllowTransitionAnimations)
             {
@@ -300,7 +307,7 @@ namespace KCore.Graphics
             }
         }
 
-        public static void ReturnAnimation(this BaseForm b, bool horizontal = false)
+        public static void ReturnAnimation(this Form b, bool horizontal = false)
         {
             if (AllowTransitionAnimations)
             {

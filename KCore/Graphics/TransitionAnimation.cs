@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Console = KCore.Terminal;
 using static KCore.Terminal;
 using KCore.Forms;
-using KCore.Graphics.Uncontrolable;
 
 namespace KCore.Graphics
 {
@@ -37,7 +36,7 @@ namespace KCore.Graphics
             }
         }
 
-        public static TerminalRedirected.DrawingRedirection GetDrawingRedirection(BaseForm block, bool stop = false)
+        public static TerminalRedirected.DrawingRedirection GetDrawingRedirection(Form block, bool stop = false)
         {
             TerminalRedirected.StartRedirection();
             if (stop) block.CancelAllActions();

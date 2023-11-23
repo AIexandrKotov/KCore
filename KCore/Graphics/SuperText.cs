@@ -23,6 +23,7 @@ namespace KCore.Graphics
 
             var x = 0;
             var y = 0;
+            var max_height = container.Height - container.Top - 1;
 
             foreach (var action in actions)
             {
@@ -61,7 +62,8 @@ namespace KCore.Graphics
 
                     if (!t.Any()) continue;
 
-                    var last = t.Last(z => z.Text != " ");
+                    var last = t.LastOrDefault(z => z.Text != " ");
+                    if (last == null) continue;
 
                     var free = container.Width - (last.Position.Item1 + last.Text.Length);
                     if (alignment == TextAlignment.Center) if (free > 1) free = free / 2 + free % 2;

@@ -93,7 +93,7 @@ namespace KCore.Graphics.Special
         bool inputmode = false;
         TextInputStern stern = TextInputStern.AllSymbols;
         StringBuilder inputstring = new StringBuilder();
-        BaseForm Reference;
+        Form Reference;
 
         void Add(char c)
         {
@@ -143,11 +143,11 @@ namespace KCore.Graphics.Special
         public Action OnAnyInput { get; set; } = delegate { };
         public string RedrawMethodName { get; set; } = "InputStringRedraw";
         public Action RedrawMethod { set => RedrawMethodName = value.Method.Name; }
-        public TextInput(BaseForm form)
+        public TextInput(Form form)
         {
             Reference = form;
         }
-        public TextInput(BaseForm form, int capacity)
+        public TextInput(Form form, int capacity)
         {
             Reference = form;
             limitlength = capacity;
@@ -290,5 +290,6 @@ namespace KCore.Graphics.Special
         }
 
         public void OnKeyUp(byte key) { }
+
     }
 }

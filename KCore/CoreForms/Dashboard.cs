@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KCore.CoreForms
 {
-    internal class Dashboard : BaseForm
+    internal class Dashboard : Form
     {
         protected override bool IsRecursiveForm() => true;
 

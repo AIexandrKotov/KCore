@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KCore.CoreForms
 {
-    public class ResizeViewer : BaseForm
+    public class ResizeViewer : Form
     {
         public static TimeSpan ResizePause = new TimeSpan(1 * TimeSpan.TicksPerSecond);
         public static bool ResizeStarted;

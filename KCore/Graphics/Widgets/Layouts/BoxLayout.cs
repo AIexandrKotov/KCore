@@ -19,17 +19,20 @@ namespace KCore.Graphics.Widgets
         public BoxLayout(
             BoxOrientation? orientation = null,
             List<BoundedObject> widgets = null,
+            bool fillRest = true,
 
             int left = 0, int top = 0, IContainer container = null, Alignment? alignment = null)
             : base(left, top, container, alignment)
         {
             Widgets = widgets ?? new List<BoundedObject>();
             Orientation = orientation ?? BoxOrientation.Horizontal;
+            FillRest = fillRest;
         }
 
         public override int Width => Container.Width;
         public override int Height => Container.Height;
 
+        public bool FillRest;
         public BoxOrientation Orientation;
         public List<BoundedObject> Widgets;
 
@@ -38,9 +41,13 @@ namespace KCore.Graphics.Widgets
             if (Widgets.Count == 0) return;
             var value = Orientation == BoxOrientation.Vertical ? Container.Height : Container.Width;
             var containers_sizes = Enumerable.Repeat(value / Widgets.Count, Widgets.Count).ToArray();
-            var rest = value - containers_sizes.Sum();
-            for (var i = 0; rest > 0; rest--)
-                containers_sizes[i++]++;
+
+            if (FillRest)
+            {
+                var rest = value - containers_sizes.Sum();
+                for (var i = 0; rest > 0; rest--)
+                    containers_sizes[i++]++;
+            }
 
             var containers = Orientation == BoxOrientation.Vertical
                 ? containers_sizes.ConvertAll(x => new StaticContainer(0, 0, Width, x))
@@ -93,7 +100,7 @@ namespace KCore.Graphics.Widgets
 
         public void RemoveWidget(BoundedObject o)
         {
-            Widgets.Add(o);
+            Widgets.Remove(o);
             UpdateSizes();
         }
 

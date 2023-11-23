@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KCore.Forms
 {
-    public class SimpleEventForm : BaseForm
+    public class SimpleEventForm : Form
     {
         public event Action AllRedraw;
         public event Action Closing;
@@ -21,8 +21,16 @@ namespace KCore.Forms
 
         protected override void OnAllRedraw() => AllRedraw?.Invoke();
         protected override void OnClosing() => Closing?.Invoke();
-        protected override void OnKeyDown(byte key) => KeyDown?.Invoke(key);
-        protected override void OnKeyUp(byte key) => KeyUp?.Invoke(key);
+        protected override void OnKeyDown(byte key)
+        {
+            base.OnKeyDown(key);
+            KeyDown?.Invoke(key);
+        }
+        protected override void OnKeyUp(byte key)
+        {
+            base.OnKeyUp(key);
+            KeyUp?.Invoke(key);
+        }
         protected override void OnOpening() => Opening?.Invoke();
         protected override void OnResize() => Resize?.Invoke();
         protected override void OnReturned() => Returned?.Invoke();

@@ -1,10 +1,12 @@
 ﻿using KCore.CoreForms;
+using KCore.Graphics;
 using KCore.Graphics.Core;
 using KCore.TerminalCore;
 using KCore.Theming;
 using KCore.Tools;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
@@ -47,8 +49,8 @@ namespace KCore
 
         internal static Thread KeyThread { get; set; }
 
-        private static int keywait = 4000;
-        private static int keysplit = 500;
+        private static int keywait = 1500;
+        private static int keysplit = 150;
         private static bool onlyOneRepeation = true;
 
         public static bool OnlyOneRepeation { get => onlyOneRepeation; set => onlyOneRepeation = value; }
@@ -210,6 +212,35 @@ namespace KCore
         private const string WINDOW_SIZE_TOO_SMALL_EXCEPTION_STRING = "Window size too small";
         internal static TimeSpan UPS { get; private set; } = new TimeSpan(TimeSpan.TicksPerSecond / DefaultUpdatesPerSecond);
         internal static bool WindowIsActive { get => TerminalBase.FindWindow(null, Console.Title) == TerminalBase.GetForegroundWindow(); }
+
+
+        private class SetByAlignment : BoundedObject
+        {
+            public static SetByAlignment This = new SetByAlignment();
+
+            public SetByAlignment()
+            {
+                Container = TerminalContainer.This;
+            }
+            public override (int, int) Draw(int left, int top)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override (int, int) Clear(int left, int top)
+            {
+                throw new NotImplementedException();
+            }
+        }
+        public static void Set(Alignment alignment, int left, int top)
+        {
+            SetByAlignment.This.Left = left;
+            SetByAlignment.This.Top = top;
+            SetByAlignment.This.Alignment = alignment;
+            (left, top) = SetByAlignment.This.GetCorner();
+            Set(left, top);
+        }
+
         #endregion
 
 

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using static KCore.Terminal;
 
-namespace KCore.Graphics.Uncontrolable
+namespace KCore.Graphics
 {
     public static class Graph
     {
@@ -568,5 +568,6 @@ namespace KCore.Graphics.Uncontrolable
             Write(right);
             ResetColor();
         }
+
     }
 }

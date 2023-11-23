@@ -4,12 +4,12 @@ namespace KCore.Graphics
 {
     public abstract class BoundedObject : IDrawable, IContainer
     {
-        private static int left;
-        private static int top;
+        private int left;
+        private int top;
 
-        public bool FillWidth { get; set; }
-        public bool FillHeight { get; set; }
-        public virtual int Left { get => FillWidth ? 0 : left; set => left = value; }
+        public virtual bool FillWidth { get; set; }
+        public virtual bool FillHeight { get; set; }
+        public virtual int Left { get => FillWidth ? 0: left; set => left = value; }
         public virtual int Top { get => FillHeight ? 0: top; set => top = value; }
         public virtual int Width { get => FillWidth ? Container.Width : ContentWidth; }
         public virtual int Height { get => FillHeight ? Container.Height : ContentHeight; }
@@ -21,18 +21,18 @@ namespace KCore.Graphics
         int IContainer.Width => Width;
         int IContainer.Height => Height;
 
-        public IContainer Container { get; set; }
-        public Alignment Alignment { get; set; } = LeftUpAlignment;
+        public virtual IContainer Container { get; set; }
+        public virtual Alignment Alignment { get; set; } = LeftUpAlignment;
 
         protected const Alignment LeftUpAlignment = Alignment.LeftWidth | Alignment.UpHeight;
 
-        public virtual (int, int) Draw()
+        public (int, int) Draw()
         {
             var (x, y) = GetCorner();
             Draw(x, y);
             return (x, y);
         }
-        public virtual (int, int) Clear()
+        public (int, int) Clear()
         {
             var (x, y) = GetCorner();
             Clear(x, y);
@@ -44,7 +44,7 @@ namespace KCore.Graphics
             return (((int)alignment | 0b0011) == 0b0011) || (((int)alignment | 0b1100) == 0b1100);
         }
 
-        public virtual ValueTuple<int, int> Draw(ConsoleColor background, ConsoleColor foreground)
+        public (int, int) Draw(ConsoleColor background, ConsoleColor foreground)
         {
             Terminal.Back = background;
             Terminal.Back = foreground;

@@ -1,5 +1,5 @@
-﻿using KCore.Graphics.Special;
-using KCore.Graphics.Uncontrolable;
+﻿using KCore.Graphics.Containers;
+using KCore.Graphics.Special;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +21,6 @@ namespace KCore.Graphics.Widgets
         {
             Fore = foreground;
             Back = background;
-            if (text.Contains("\n")) throw new ArgumentException("Multiline text in one-line widget");
             Text = text;
             TextAlignment = textAlignment;
             ContentWidth = width ?? Container.Width;
@@ -33,13 +32,19 @@ namespace KCore.Graphics.Widgets
         public ConsoleColor? Back;
         public override int Height => 1;
 
+        public IContainer GetTextContainer(int left, int top)
+        {
+            return new StaticContainer(left, top, Width, Height);
+        }
+
         public override (int, int) Draw(int left, int top)
         {
             Terminal.Set(left, top);
             var fore = Terminal.Fore = Fore ?? Theme.Fore;
             var back = Terminal.Back = Back ?? Theme.Border;
             Graph.Row(left, top, Width);
-            Text.PrintSuperText(this, () => (fore, back), TextAlignment);
+            if (!string.IsNullOrEmpty(Text))
+                Text.PrintSuperText(GetTextContainer(left, top), () => (fore, back), TextAlignment);
             Terminal.ResetColor();
 
             return (left, top);

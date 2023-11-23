@@ -1,4 +1,5 @@
-﻿using KCore.Forms;
+﻿using KCore;
+using KCore.Forms;
 using KCore.Graphics.Widgets;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace Runner
             box1.AddWidget(new TextRow(text: "row 1.3", foreground: ConsoleColor.Red));
 
             box2.Orientation = BoxLayout.BoxOrientation.Vertical;
+            box2.FillRest = false;
             box2.AddWidget(new TextRow(text: "row 2.1", foreground: ConsoleColor.Magenta));
             box2.AddWidget(new TextRow(text: "row 2.2", foreground: ConsoleColor.DarkGreen));
             box2.AddWidget(new TextRow(text: "row 2.3", foreground: ConsoleColor.DarkBlue));

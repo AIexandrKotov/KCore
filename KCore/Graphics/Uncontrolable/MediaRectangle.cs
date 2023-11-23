@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static KCore.Terminal;
 
-namespace KCore.Graphics.Uncontrolable
+namespace KCore.Graphics
 {
     public class MediaRectangle : BoundedObject, IContainer
     {
