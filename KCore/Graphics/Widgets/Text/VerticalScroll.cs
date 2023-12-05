@@ -47,12 +47,12 @@ namespace KCore.Graphics.Widgets
         public override (int, int) Draw(int left, int top)
         {
             var start_cursor = (int)Math.Round(Scrollable.CurrentIndent / (double)Scrollable.Length * Height);
-            var end_cursor = (int)Math.Round((Scrollable.CurrentIndent + Scrollable.Height) / (double)Scrollable.Length * Height);
-            if (end_cursor > Scrollable.Height) end_cursor = Scrollable.Height;
+            var end_cursor = start_cursor + (int)Math.Round((Scrollable.Height / (double)Scrollable.Length) * Height);
+            if (end_cursor > Height) end_cursor = Height;
             if (end_cursor < start_cursor)
             {
                 start_cursor = 0;
-                end_cursor = Scrollable.Height;
+                end_cursor = Height;
             }
             Terminal.Back = Back;
             Terminal.Fore = Fore;

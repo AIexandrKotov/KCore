@@ -161,12 +161,14 @@ namespace KCore.Graphics.Widgets
                     if (Position < Childs.Count)
                     {
                         var height = Childs[Position].Height;
-                        UpPosition += PlacedOnScreenChilds.TakeWhile(x =>
+                        var add = PlacedOnScreenChilds.TakeWhile(x =>
                         {
+                            var more = height > 0;
                             height -= x.Height;
-                            return height > 0;
+                            return more;
                         }).Count();
-                        UpPosition++;
+                        if (add == 0) add = 1;
+                        UpPosition += add;
                     }
                 }
                 if (Position >= Childs.Count)
