@@ -103,7 +103,6 @@ namespace KCore.Graphics.Special
                 if (!IsCharMeetRequirement(inputstring.ToString(), c, stern)) return;
                 if (Key.CapsLock.Triggered() ^ Key.Shift.Pressed()) inputstring.Append(c);
                 else inputstring.Append(char.ToLower(c));
-                Reference.Reactions[RedrawMethodName] = true;
             }
         }
         void DelWord()
@@ -125,7 +124,6 @@ namespace KCore.Graphics.Special
                     {
                         inputstring.Clear();
                     }
-                    Reference.Reactions[RedrawMethodName] = true;
                 }
             }
         }
@@ -135,14 +133,11 @@ namespace KCore.Graphics.Special
             if (inputstring.Length > 0)
             {
                 inputstring.Remove(inputstring.Length - 1, 1);
-                Reference.Reactions[RedrawMethodName] = true;
             }
         }
         #endregion
 
-        public Action OnAnyInput { get; set; } = delegate { };
-        public string RedrawMethodName { get; set; } = "InputStringRedraw";
-        public Action RedrawMethod { set => RedrawMethodName = value.Method.Name; }
+        public Action<TextInput> OnAnyInput { get; set; } = delegate { };
         public TextInput(Form form)
         {
             Reference = form;
@@ -277,7 +272,7 @@ namespace KCore.Graphics.Special
                     default: break;
                 }
             }
-            OnAnyInput();
+            OnAnyInput(this);
         }
         public void Clear()
         {
@@ -290,6 +285,5 @@ namespace KCore.Graphics.Special
         }
 
         public void OnKeyUp(byte key) { }
-
     }
 }

@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace KCore.Graphics.Widgets
 {
-    public class Window : BoundedObject, IWidget
+    public class Window : Widget
     {
         public Window(
+            BoundedObject child = null,
             int? width = null, int? height = null,
             string title = "", TextAlignment titleAlignment = TextAlignment.Center, (int, int)? titlePadding = null,
+            bool hasBorder = true,
             ConsoleColor? borderColor = null, ConsoleColor? titleTextColor = null,
             ConsoleColor? textBackColor = null, ConsoleColor? textForeColor = null,
-            (int, int, int, int)? padding = null, BoundedObject @internal = null,
+            (int, int, int, int)? padding = null,
 
-
-            int left = 0, int top = 0, IContainer container = null, Alignment? alignment = null, bool fillWidth = false, bool fillHeight = false)
+            int left = 0, int top = 0, IContainer container = null, Alignment? alignment = null, bool fillWidth = true, bool fillHeight = true)
             : base(left, top, container, alignment, fillWidth, fillHeight)
         {
             ContentWidth = width ?? Container.Width;
@@ -27,14 +28,16 @@ namespace KCore.Graphics.Widgets
             TitlePadding = titlePadding ?? (1, 1);
             TitleAlignment = titleAlignment;
             TitleTextColor = titleTextColor;
+            HasBorder = hasBorder;
             BorderColor = borderColor;
             TextForeColor = textForeColor;
             TextBackColor = textBackColor;
-            Padding = padding ?? (1, 1, 1, 1);
-            Internal = @internal;
-            UpdateSizes();
+            Padding = padding ?? (HasBorder ? (1, 1, 1, 1) : (0, 0, 0, 0));
+            Child = child;
+            Resize();
         }
 
+        public bool HasBorder;
         public ConsoleColor? BorderColor;
         public ConsoleColor? TitleTextColor;
         public ConsoleColor? TextForeColor;
@@ -47,7 +50,7 @@ namespace KCore.Graphics.Widgets
         /// </summary>
         public (int, int, int, int) Padding;
 
-        public BoundedObject Internal;
+        public BoundedObject Child;
 
         public IContainer GetTitleContainer(int left, int top)
         {
@@ -69,16 +72,19 @@ namespace KCore.Graphics.Widgets
 
         public override (int, int) Draw(int left, int top)
         {
-            Terminal.Set(left, top);
-            var border = Terminal.Back = BorderColor ?? Theme.Border;
-            Graph.Row(left, top, Width);
-            Graph.Row(left, top + Height - 1, Width);
-            Graph.Column(left, top, Height);
-            Graph.Column(left + Width - 1, top, Height);
-            var titleColor = Terminal.Fore = TitleTextColor ?? Theme.Fore;
-            Title.PrintSuperText(GetTitleContainer(left, top), () => (titleColor, border));
-            Terminal.ResetColor();
-            Internal?.Draw();
+            if (HasBorder)
+            {
+                Terminal.Set(left, top);
+                var border = Terminal.Back = BorderColor ?? Theme.Border;
+                Graph.Row(left, top, Width);
+                Graph.Row(left, top + Height - 1, Width);
+                Graph.Column(left, top, Height);
+                Graph.Column(left + Width - 1, top, Height);
+                var titleColor = Terminal.Fore = TitleTextColor ?? Theme.Fore;
+                Title.PrintSuperText(GetTitleContainer(left, top), () => (titleColor, border), TitleAlignment);
+                Terminal.ResetColor();
+            }
+            Child?.Draw();
 
             return (left, top);
         }
@@ -89,13 +95,13 @@ namespace KCore.Graphics.Widgets
             return (left, top);
         }
 
-        public void UpdateSizes()
+        public override void Resize()
         {
-            if (Internal != null)
+            if (Child != null)
             {
                 var (left, top) = GetCorner();
-                Internal.Container = GetInternalContainer(left, top);
-                if (Internal is IWidget widget) widget.UpdateSizes();
+                Child.Container = GetInternalContainer(left, top);
+                if (Child is Widget widget) widget.Resize();
             }    
         }
     }

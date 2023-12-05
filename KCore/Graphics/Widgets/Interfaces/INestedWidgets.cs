@@ -8,8 +8,9 @@ namespace KCore.Graphics.Widgets
 {
     public interface INestedWidgets
     {
-        void AddWidget(BoundedObject o);
-        void RemoveWidget(BoundedObject o);
+        void AddWidget(Widget widget);
+        void RemoveWidget(Widget widget);
+        void ClearWidgets(Predicate<Widget> predicate);
         void ClearWidgets();
     }
 }

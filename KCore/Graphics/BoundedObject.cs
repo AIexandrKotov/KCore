@@ -110,14 +110,6 @@ namespace KCore.Graphics
             throw new Exception("corner for this object not supported");
         }
 
-        public void UpdateOffset(int left, int top, int height, int width)
-        {
-            Left = left;
-            Top = top;
-            ContentHeight = height;
-            ContentWidth = width;
-        }
-
         public abstract (int, int) Draw(int left, int top);
         public abstract (int, int) Clear(int left, int top);
 

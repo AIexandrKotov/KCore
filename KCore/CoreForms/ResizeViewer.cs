@@ -18,12 +18,22 @@ namespace KCore.CoreForms
         public ResizeViewer()
         {
             LastResize = FormTimer;
-            Add(() => (FormTimer - LastResize) > ResizePause, Close);
-            AddRedrawer(() => (FormTimer - LastSecsRedrawed).TotalMilliseconds > 5, RedrawSecs);
+            Bind(new DelegateRequest(this, form => (form.FormTimer - LastResize) > ResizePause, form => Close()));
+            Bind(new Redrawer(this, form => (form.FormTimer - LastSecsRedrawed).TotalMilliseconds > 5, form => RedrawSecs()));
         }
 
         public TimeSpan LastResize;
         public TimeSpan LastSecsRedrawed;
+
+        public void RedrawSecs()
+        {
+            LastSecsRedrawed = FormTimer;
+            Terminal.Set(0, Terminal.FixedWindowHeight / 2);
+            Terminal.Write(string.Format(
+                GoingBackVia,
+                (LastResize - FormTimer + ResizePause)
+                    .TotalSeconds.Round(1)).PadCenter(Terminal.FixedWindowWidth));
+        }
 
         protected override void OnOpening()
         {
@@ -46,16 +56,6 @@ namespace KCore.CoreForms
             Terminal.Write($"{Terminal.FixedWindowWidth}x{Terminal.FixedWindowHeight}".PadCenter(Terminal.FixedWindowWidth));
             Terminal.Set(0, Terminal.FixedWindowHeight / 2 - 1);
             Terminal.Write(YouAreResizingTheConsoleWindow.PadCenter(Terminal.FixedWindowWidth));
-        }
-
-        public void RedrawSecs()
-        {
-            LastSecsRedrawed = FormTimer;
-            Terminal.Set(0, Terminal.FixedWindowHeight / 2);
-            Terminal.Write(string.Format(
-                GoingBackVia, 
-                (LastResize - FormTimer + ResizePause)
-                    .TotalSeconds.Round(1)).PadCenter(Terminal.FixedWindowWidth));
         }
     }
 }

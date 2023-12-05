@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KCore.Graphics.Widgets
 {
-    public class PaddingContainer : BoundedObject, IWidget
+    public class PaddingContainer : Widget
     {
         public PaddingContainer(
             BoundedObject @internal,
@@ -18,7 +18,7 @@ namespace KCore.Graphics.Widgets
         {
             Internal = @internal;
             Padding = padding ?? (1, 1, 1, 1);
-            UpdateSizes();
+            Resize();
         }
 
         public BoundedObject Internal;
@@ -43,12 +43,12 @@ namespace KCore.Graphics.Widgets
                 Height - Padding.Item2 - Padding.Item4);
         }
 
-        public void UpdateSizes()
+        public override void Resize()
         {
             var (left, top) = GetCorner();
             Internal.Container = GetContainer(left, top);
-            if (Internal is IWidget widget)
-                widget.UpdateSizes();
+            if (Internal is Widget widget)
+                widget.Resize();
         }
     }
 }

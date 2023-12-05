@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KCore.Graphics.Widgets
 {
-    public class BoxLayout : BoundedObject, INestedWidgets, IWidget
+    public class BoxLayout : Widget, INestedWidgets
     {
         public enum BoxOrientation
         {
@@ -18,13 +18,13 @@ namespace KCore.Graphics.Widgets
 
         public BoxLayout(
             BoxOrientation? orientation = null,
-            List<BoundedObject> widgets = null,
+            List<Widget> widgets = null,
             bool fillRest = true,
 
             int left = 0, int top = 0, IContainer container = null, Alignment? alignment = null)
             : base(left, top, container, alignment)
         {
-            Widgets = widgets ?? new List<BoundedObject>();
+            Widgets = widgets ?? new List<Widget>();
             Orientation = orientation ?? BoxOrientation.Horizontal;
             FillRest = fillRest;
         }
@@ -34,9 +34,9 @@ namespace KCore.Graphics.Widgets
 
         public bool FillRest;
         public BoxOrientation Orientation;
-        public List<BoundedObject> Widgets;
+        public List<Widget> Widgets;
 
-        public void UpdateSizes()
+        public override void Resize()
         {
             if (Widgets.Count == 0) return;
             var value = Orientation == BoxOrientation.Vertical ? Container.Height : Container.Width;
@@ -73,8 +73,7 @@ namespace KCore.Graphics.Widgets
                 containers[i].Left += (this as IContainer).Left;
                 containers[i].Top += (this as IContainer).Top;
                 Widgets[i].Container = containers[i];
-                if (Widgets[i] is IWidget widget)
-                    widget.UpdateSizes();
+                Widgets[i].Resize();
             }
         }
 
@@ -92,16 +91,21 @@ namespace KCore.Graphics.Widgets
             return (left, top);
         }
 
-        public void AddWidget(BoundedObject o)
+        public void AddWidget(Widget widget)
         {
-            Widgets.Add(o);
-            UpdateSizes();
+            Widgets.Add(widget);
+            Resize();
         }
 
-        public void RemoveWidget(BoundedObject o)
+        public void RemoveWidget(Widget widget)
         {
-            Widgets.Remove(o);
-            UpdateSizes();
+            Widgets.Remove(widget);
+            Resize();
+        }
+
+        public void ClearWidgets(Predicate<Widget> predicate)
+        {
+            Widgets.RemoveAll(predicate);
         }
 
         public void ClearWidgets()

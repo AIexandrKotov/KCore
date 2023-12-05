@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace KCore.Graphics.Widgets
 {
-    public class TextRow : BoundedObject
+    public class TextRow : Widget
     {
         public TextRow(
             int? width = null,
@@ -57,6 +57,10 @@ namespace KCore.Graphics.Widgets
             Terminal.ResetColor();
 
             return (left, top);
+        }
+        public override void Resize()
+        {
+            
         }
     }
 }

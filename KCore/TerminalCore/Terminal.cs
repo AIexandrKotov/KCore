@@ -35,22 +35,29 @@ namespace KCore
         internal static void AddKeyUp(Action<byte> pressKey) => OnKeyUp += pressKey;
         internal static void ClearKeyUp(Action<byte> pressKey) => OnKeyUp -= pressKey;
 
+        private static int cached_ups = 70;
         private static void ManualTools(byte x)
         {
-            if (Key.Control.Pressed())
+            if (x == Key.F2) WindowSizeExternalManage = !WindowSizeExternalManage;
+            if (x == Key.F4) FixedWindowWidth++;
+            if (x == Key.F6) FixedWindowHeight++;
+            if (x == Key.F3 && FixedWindowWidth > minimalWindowWidth) FixedWindowWidth--;
+            if (x == Key.F5 && FixedWindowHeight > minimalWindowHeight) FixedWindowHeight--;
+            if (x == Key.F8)
             {
-                if (x == Key.PageUp) FixedWindowWidth++;
-                if (x == Key.Home) FixedWindowHeight++;
-                if (x == Key.PageDown && FixedWindowWidth > minimalWindowWidth) FixedWindowWidth--;
-                if (x == Key.End && FixedWindowHeight > minimalWindowHeight) FixedWindowHeight--;
-                if (x == Key.F3) WindowSizeExternalManage = !WindowSizeExternalManage;
+                if (UpdatesPerSecond == 0) UpdatesPerSecond = cached_ups;
+                else
+                {
+                    cached_ups = UpdatesPerSecond;
+                    UpdatesPerSecond = 0;
+                }
             }
         }
 
         internal static Thread KeyThread { get; set; }
 
-        private static int keywait = 1500;
-        private static int keysplit = 150;
+        private static int keywait = 20;
+        private static int keysplit = 3;
         private static bool onlyOneRepeation = true;
 
         public static bool OnlyOneRepeation { get => onlyOneRepeation; set => onlyOneRepeation = value; }
@@ -73,6 +80,7 @@ namespace KCore
         }
 
         private static bool KeyThreadLoop = true;
+        private static bool RestrictedPerfomance = true;
         private static void KeyProcessor()
         {
             var pressed_keys = new int[256];
@@ -80,6 +88,7 @@ namespace KCore
             byte current;
             while (KeyThreadLoop)
             {
+                if (RestrictedPerfomance) Thread.Sleep(1);
                 if (!WindowIsActive) continue;
                 if (OnKeyDown == null || OnKeyUp == null) continue;
                 if (!onlyOneRepeation) repeation = -1;
@@ -199,7 +208,7 @@ namespace KCore
 
         #region Extended KCore API
 
-        public const int DefaultUpdatesPerSecond = 60;
+        public const int DefaultUpdatesPerSecond = 70;
 
         private static int minimalWindowWidth, minimalWindowHeight;
 
@@ -210,7 +219,7 @@ namespace KCore
         private static bool elderThanWS2016;
         private static readonly object syncresize = new object();
         private const string WINDOW_SIZE_TOO_SMALL_EXCEPTION_STRING = "Window size too small";
-        internal static TimeSpan UPS { get; private set; } = new TimeSpan(TimeSpan.TicksPerSecond / DefaultUpdatesPerSecond);
+        internal static TimeSpan UPS { get; private set; } = new TimeSpan((long)(TimeSpan.TicksPerSecond / (double)DefaultUpdatesPerSecond));
         internal static bool WindowIsActive { get => TerminalBase.FindWindow(null, Console.Title) == TerminalBase.GetForegroundWindow(); }
 
 
@@ -362,7 +371,7 @@ namespace KCore
             set
             {
                 ups = value;
-                if (value != 0) UPS = new TimeSpan(TimeSpan.TicksPerSecond / value);
+                if (value != 0) UPS = new TimeSpan((long)(TimeSpan.TicksPerSecond / (double)value));
                 else UPS = TimeSpan.Zero;
             }
         }

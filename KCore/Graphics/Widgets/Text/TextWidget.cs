@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KCore.Graphics.Widgets
 {
-    public class TextWidget : BoundedObject, IWidget
+    public class TextWidget : Widget
     {
         public TextWidget(
             string text = "",
@@ -18,7 +18,7 @@ namespace KCore.Graphics.Widgets
             Alignment = alignment ?? Alignment.CenterWidth | Alignment.CenterHeight;
             Text = text;
             TextAlignment = GetTextAlignment(Alignment);
-            UpdateSizes();
+            Resize();
         }
 
         private int height;
@@ -65,7 +65,7 @@ namespace KCore.Graphics.Widgets
             return (left, top);
         }
 
-        public void UpdateSizes()
+        public override void Resize()
         {
             var superText = Text.GetSuperText(GetTextContainer(0, 0), null, TextAlignment);
             height = superText.OfType<SuperText.SuperTextNewLine>().Count();

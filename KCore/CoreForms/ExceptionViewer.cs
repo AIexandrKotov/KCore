@@ -1,4 +1,5 @@
 ﻿using KCore.Extensions;
+using KCore.Graphics;
 using System;
 
 namespace KCore.CoreForms
@@ -22,22 +23,16 @@ namespace KCore.CoreForms
         private bool restartavailable;
         private bool showdescription = true;
         public bool Restarted { get; private set; }
-        public ExceptionViewer(Exception e, bool restart)
-        {
-            restartavailable = restart;
-            exception = e;
-
-            Add(Exit, Restart, ChangeStyle);
-
-            Terminal.Back = ConsoleColor.Black;
-        }
-        public ExceptionViewer(Exception e, bool restart, bool showdesc)
+        public ExceptionViewer(Exception e, bool restart, bool showdesc = true)
         {
             restartavailable = restart;
             exception = e;
             showdescription = showdesc;
 
-            Add(Exit, Restart, ChangeStyle);
+            ExitRequest = new Trigger(this, form => Exit());
+            RestartRequest = new Trigger(this, form => Restart());
+            ChangeStyleRequest = new Trigger(this, form => ChangeStyle());
+            Bind(ExitRequest, RestartRequest, ChangeStyleRequest);
 
             Terminal.Back = Back;
         }
@@ -154,12 +149,13 @@ namespace KCore.CoreForms
             Clear();
         }
 
+        private Trigger ExitRequest, RestartRequest, ChangeStyleRequest;
         protected override void OnKeyDown(byte key)
         {
-            if (key == Key.Escape) this.Reactions["Exit"] = true;
-            else if (key == Key.Enter || key == Key.E || key == Key.Spacebar) this.Reactions["Restart"] = true;
-            else if (key != Key.Escape && key > 2) this.Reactions["Restart"] = true;
-            if (key == Key.F5) Reactions["ChangeStyle"] = true;
+            if (key == Key.F5) ChangeStyleRequest.Do();
+            else if (key == Key.Escape) ExitRequest.Do();
+            else if (key == Key.Enter || key == Key.E || key == Key.Spacebar) RestartRequest.Do();
+            else if (key != Key.Escape && key > 2) RestartRequest.Do();
         }
     }
 }

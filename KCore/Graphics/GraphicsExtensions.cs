@@ -2,10 +2,12 @@
 using KCore.Forms;
 using KCore.Graphics.Containers;
 using KCore.Graphics.Core;
+using KCore.Graphics.Widgets;
 using KCore.TerminalCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using static KCore.Graphics.TransitionAnimation;
@@ -14,6 +16,11 @@ namespace KCore.Graphics
 {
     public static class GraphicsExtensions
     {
+        public static void ChangeVisible(this Widget widget)
+        {
+            widget.Enabled = !widget.Enabled;
+        }
+
         public static ValueTuple<int, int> CenterPads(this string s, int totalWidth)
         {
             var tw = totalWidth - s.Length;
@@ -105,7 +112,7 @@ namespace KCore.Graphics
             {
                 if ((x is SuperText.SuperTextOut sto) && (sto.Position.Item1 + x.CachedCorner.Item1 < container.Left || sto.Position.Item1 + x.CachedCorner.Item1 >= (container.Left + container.Width)
                  || sto.Position.Item2 + x.CachedCorner.Item2 < container.Top || sto.Position.Item2 + x.CachedCorner.Item2 >= (container.Top + container.Height)
-                 || sto.Text.Length + sto.Position.Item1 + x.CachedCorner.Item1 > container.Width + container.Left)) break;
+                 || sto.Text.Length + sto.Position.Item1 + x.CachedCorner.Item1 > container.Width + container.Left)) continue;
                 x.Invoke();
             }
         }

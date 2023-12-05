@@ -1,5 +1,6 @@
 ﻿using KCore;
 using KCore.Forms;
+using KCore.Graphics;
 using KCore.Graphics.Widgets;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,11 @@ namespace Runner
     public class Form2 : Form
     {
         public BoxLayout box;
+        public Trigger CloseTrigger;
 
         public Form2()
         {
-            RootWidget = box = new BoxLayout();
+            Root.AddWidget(box = new BoxLayout());
             box.Orientation = BoxLayout.BoxOrientation.Vertical;
             var box1 = new BoxLayout();
             var box2 = new BoxLayout();
@@ -35,13 +37,21 @@ namespace Runner
             box3.AddWidget(new TextRow(text: "row 3.1", foreground: ConsoleColor.DarkYellow));
             box3.AddWidget(new TextRow(text: "row 3.2", foreground: ConsoleColor.DarkCyan));
             box.AddWidget(box1);
-            box.AddWidget(new Window(fillWidth: true, fillHeight: true, @internal: box2, borderColor: ConsoleColor.Red));
+            box.AddWidget(new Window(fillWidth: true, fillHeight: true, child: box2, borderColor: ConsoleColor.Red));
             box.AddWidget(box3);
+
+            Bind(CloseTrigger = new Trigger(this, form => form.Close()));
         }
 
         protected override void OnAllRedraw()
         {
             box.Draw();
+        }
+
+        protected override void OnKeyDown(byte key)
+        {
+            base.OnKeyDown(key);
+            if (key == Key.Tab || key == Key.Escape) CloseTrigger.Do();
         }
     }
 }

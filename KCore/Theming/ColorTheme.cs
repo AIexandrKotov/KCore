@@ -14,7 +14,7 @@ namespace KCore.Theming
         public const int ErrorID = 3;
         public const int BorderID = 4;
         
-        public static ConsoleColor[] All = new ConsoleColor[256];
+        public ConsoleColor[] All = new ConsoleColor[256];
         public ColorTheme() { }
 
         public ConsoleColor Fore { get => All[ForeID]; set => All[ForeID] = value; }

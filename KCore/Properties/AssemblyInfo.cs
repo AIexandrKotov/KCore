@@ -41,8 +41,8 @@ public static class KCoreVersion
     public const string Major = "0"; //vh
     public const string Minor = "1"; //vh
     public const string Build = "0"; //vh
-    public const string Revision = "174"; //vh
-    public const long LastUpdate = 638363312770023806; //vh
+    public const string Revision = "483"; //vh
+    public const long LastUpdate = 638374132138569994; //vh
 
     public const string Version = Major + "." + Minor + "." + Build + "." + Revision;
     public const string VersionWithoutRevision = Major + "." + Minor + "." + Build;

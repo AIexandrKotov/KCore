@@ -9,6 +9,7 @@ using KCore.TerminalCore;
 using KCore.CoreForms;
 using KCore.Graphics;
 using KCore.Graphics.Widgets;
+using System.CodeDom.Compiler;
 
 namespace KCore
 {
@@ -17,6 +18,10 @@ namespace KCore
     /// </summary>
     public abstract class Form
     {
+        public Form()
+        {
+            Root = new RootWidget(this);
+        }
         #region fields and vmethods 
         private bool status, allredraw, resize;
 
@@ -85,210 +90,74 @@ namespace KCore
 
         #endregion
         public TimeSpan FormTimer { get; private set; }
-        public IWidget RootWidget { get; protected set; }
-        public IControlable ActiveWidget { get => activeWidget; protected set
-            {
-                activeWidget = value;
-                is_redrawable = value is IRedrawable;
-                redrawable = value as IRedrawable;
-            }
-        }
-        private IControlable activeWidget;
-        private bool is_redrawable;
-        private IRedrawable redrawable;
+        private TimeSpan LastStartExecuted;
+        private TimeSpan LastEndExecuted;
+        public TimeSpan RealUPS => LastEndExecuted - LastStartExecuted;
 
-        /// <summary>
-        /// Словарь флагов
-        /// </summary>
-        public Dictionary<string, bool> Reactions { get; private set; } = new Dictionary<string, bool>();
-        private List<Reaction> reactionlist = new List<Reaction>();
-
-        private Reaction[] reactions;
+        private List<Request> requestList = new List<Request>();
+        private Request[] requests;
+        public Request[] Requests => requestList.ToArray();
         private readonly Stopwatch stopwatch = new Stopwatch();
 
         public Form Reference { get; set; } = null;
 
         private void Optimize()
         {
-            if (reactionlist?.Count > 0)
+            if (requestList?.Count > 0)
             {
-                foreach (var x in reactionlist)
-                    if (!x.multicondition && !Reactions.ContainsKey(x.reference)) Reactions.Add(x.reference, false);
+                requests = new Request[requestList.Count]; var index = 0;
 
-                reactions = new Reaction[reactionlist.Count]; var index = 0;
+                for (var i = 0; i < requestList.Count; i++)
+                    if (!requestList[i].AllRedraw) requests[index++] = requestList[i];
+                for (var i = 0; i < requestList.Count; i++)
+                    if (requestList[i].AllRedraw) requests[index++] = requestList[i];
 
-                for (var i = 0; i < reactionlist.Count; i++)
-                    if (!reactionlist[i].isredrawer) reactions[index++] = reactionlist[i];
-                for (var i = 0; i < reactionlist.Count; i++)
-                    if (reactionlist[i].isredrawer) reactions[index++] = reactionlist[i];
-
-                redrawersstart = Array.FindIndex(reactions, x => x.isredrawer);
-                if (redrawersstart == -1) redrawersstart = reactions.Length;
+                redrawersstart = Array.FindIndex(requests, x => x.AllRedraw);
+                if (redrawersstart == -1) redrawersstart = requests.Length;
             }
             else
             {
-                reactions = new Reaction[0];
+                requests = new Request[0];
             }
             optimized = true;
         }
 
-        #region KeypressInline
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void KeypressInline(byte key, string reaction, byte key1)
-        {
-            if (key == key1) Reactions[reaction] = true;
-        }
+        public readonly RootWidget Root;
+        /// <summary>
+        /// IControlable, управление которым будет перехвачено в данный момент
+        /// </summary>
+        public IControlable ActiveWidget { get; set; }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void KeypressInline(byte key, string reaction, byte key1, byte key2)
+        #region Binds
+        public void Bind(Request request)
         {
-            if (key == key1 || key == key2) Reactions[reaction] = true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void KeypressInline(byte key, string reaction, byte key1, byte key2, byte key3)
-        {
-            if (key == key1 || key == key2 || key == key3) Reactions[reaction] = true;
-        }
-        #endregion
-
-        #region Adders
-        protected void Add(params object[] objects)
-        {
-            for (var i = 0; i < objects.Length; i++)
-            {
-                switch (objects[i])
-                {
-                    case Action action: reactionlist.Add(Reaction.Create(action)); break;
-                    case ValueTuple<string, Action> refaction: reactionlist.Add(Reaction.Create(refaction.Item1, refaction.Item2)); break;
-                    case ValueTuple<Func<bool>, Action> condaction: reactionlist.Add(Reaction.Create(condaction.Item1, condaction.Item2)); break;
-                    default: throw new ArgumentException("Overload not find");
-                }
-            }
+            requestList.Add(request);
             optimized = false;
         }
-
-        protected void Add(Action action)
+        public void Bind(params Request[] requests)
         {
-            reactionlist.Add(Reaction.Create(action));
-            optimized = false;
-
-        }
-
-        protected void Add(params Action[] actions)
-        {
-            for (var i = 0; i < actions.Length; i++)
-                reactionlist.Add(Reaction.Create(actions[i]));
+            requestList.AddRange(requests);
             optimized = false;
         }
-
-        protected void Add(string reference, Action action)
+        public void Bind(Widget widget)
         {
-            reactionlist.Add(Reaction.Create(reference, action));
+            requestList.AddRange(widget.InternalGetBinds(this));
             optimized = false;
         }
-
-        protected void Add(ValueTuple<string, Action> refaction)
+        public void Bind(params Widget[] widgets)
         {
-            reactionlist.Add(Reaction.Create(refaction.Item1, refaction.Item2));
+            for (var i = 0; i < widgets.Length; i++)
+                requestList.AddRange(widgets[i].InternalGetBinds(this));
             optimized = false;
         }
-
-        protected void Add(params ValueTuple<string, Action>[] refactions)
+        public void Unbind(Request request)
         {
-            for (var i = 0; i < refactions.Length; i++)
-                reactionlist.Add(Reaction.Create(refactions[i].Item1, refactions[i].Item2));
+            requestList.Remove(request);
             optimized = false;
         }
-
-        protected void Add(Func<bool> cond, Action action)
+        public void Unbind(Widget widget)
         {
-            reactionlist.Add(Reaction.Create(cond, action));
-            optimized = false;
-        }
-
-        protected void Add(ValueTuple<Func<bool>, Action> condaction)
-        {
-            reactionlist.Add(Reaction.Create(condaction.Item1, condaction.Item2));
-            optimized = false;
-        }
-
-        protected void Add(params ValueTuple<Func<bool>, Action>[] condactions)
-        {
-            for (var i = 0; i < condactions.Length; i++)
-                reactionlist.Add(Reaction.Create(condactions[i].Item1, condactions[i].Item2));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(params object[] objects)
-        {
-            for (var i = 0; i < objects.Length; i++)
-            {
-                switch (objects[i])
-                {
-                    case Action action: reactionlist.Add(Reaction.CreateRedrawer(action)); break;
-                    case ValueTuple<string, Action> refaction: reactionlist.Add(Reaction.CreateRedrawer(refaction.Item1, refaction.Item2)); break;
-                    case ValueTuple<Func<bool>, Action> condaction: reactionlist.Add(Reaction.CreateRedrawer(condaction.Item1, condaction.Item2)); break;
-                    default: throw new ArgumentException("Overload not find");
-                }
-            }
-            optimized = false;
-        }
-
-        protected void AddRedrawer(Action action)
-        {
-            reactionlist.Add(Reaction.CreateRedrawer(action));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(params Action[] actions)
-        {
-            for (var i = 0; i < actions.Length; i++)
-                reactionlist.Add(Reaction.CreateRedrawer(actions[i]));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(string reference, Action action)
-        {
-            reactionlist.Add(Reaction.CreateRedrawer(reference, action));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(ValueTuple<string, Action> refaction)
-        {
-            reactionlist.Add(Reaction.CreateRedrawer(refaction.Item1, refaction.Item2));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(params ValueTuple<string, Action>[] refactions)
-        {
-            for (var i = 0; i < refactions.Length; i++)
-                reactionlist.Add(Reaction.CreateRedrawer(refactions[i].Item1, refactions[i].Item2));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(Func<bool> cond, Action action)
-        {
-            reactionlist.Add(Reaction.CreateRedrawer(cond, action));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(ValueTuple<Func<bool>, Action> condaction)
-        {
-            reactionlist.Add(Reaction.CreateRedrawer(condaction.Item1, condaction.Item2));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(params ValueTuple<Func<bool>, Action>[] condactions)
-        {
-            for (var i = 0; i < condactions.Length; i++)
-                reactionlist.Add(Reaction.CreateRedrawer(condactions[i].Item1, condactions[i].Item2));
-            optimized = false;
-        }
-
-        protected void AddRedrawer(Redrawable redrawable)
-        {
-            reactionlist.Add(Reaction.CreateRedrawer(() => redrawable.NeedRedraw, () => redrawable.Draw()));
+            requestList.RemoveAll(x => x is Widget.IWidgetRequest wr && wr.Widget == widget);
             optimized = false;
         }
         #endregion
@@ -302,7 +171,7 @@ namespace KCore
                 allredraw = true;
                 if (Terminal.WindowSizeExternalManage && !ResizeViewer.ResizeStarted)
                     Start(new ResizeViewer());
-                RootWidget?.UpdateSizes();
+                Root.Resize();
                 OnResize();
                 onetimeresized = true;
                 Console.CursorVisible = false;
@@ -333,13 +202,13 @@ namespace KCore
                 resize = false;
             }
 
-            if (ActiveDashborads && !ManualLock)
+            if (ActiveDashboard && !ManualLock)
             {
-                if (AllowedDashboard && !IsRecursiveForm() && DashboardForm != null)
+                if (AllowedDashboard && !IsRecursiveForm())
                 {
-                    Start(DashboardForm);
+                    Start((Form)Activator.CreateInstance(DashboardType));
                 }
-                ActiveDashborads = false;
+                ActiveDashboard = false;
             }
 
             if (RaiseException)
@@ -352,41 +221,27 @@ namespace KCore
             {
                 for (var i = 0; i < redrawersstart; i++)
                 {
-                    if (reactions[i].multicondition)
-                    {
-                        if (reactions[i].condition.Invoke()) reactions[i].action();
-                    }
-                    else if (Reactions[reactions[i].reference])
-                    {
-                        reactions[i].action();
-                        Reactions[reactions[i].reference] = false;
-                    }
+                    if (requests[i].Condition())
+                        requests[i].Invoke();
                 }
 
                 if (exit_after && resize || !status) return;
 
                 if (allredraw) OnAllRedraw();
 
-                if (is_redrawable && redrawable.NeedRedraw)
+                for (var i = redrawersstart; i < requests.Length; i++)
                 {
-                    redrawable.Redraw();
-                    redrawable.NeedRedraw = false;
-                }
-
-                for (var i = redrawersstart; i < reactions.Length; i++)
-                {
-                    if (reactions[i].multicondition)
-                    {
-                        if (allredraw || reactions[i].condition.Invoke()) reactions[i].action();
-                    }
-                    else if (allredraw || Reactions[reactions[i].reference])
-                    {
-                        reactions[i].action();
-                        Reactions[reactions[i].reference] = false;
-                    }
+                    if (allredraw || requests[i].Condition())
+                        requests[i].Invoke();
                 }
 
                 if (allredraw) OnTopAllRedraw();
+
+                if (ShowUPS)
+                {
+                    Terminal.Set(Terminal.FixedWindowWidth / 2 - 5, Terminal.FixedWindowHeight - 1);
+                    Terminal.Write($"{1000 / (LastEndExecuted - LastStartExecuted).TotalMilliseconds:0}".PadCenter(10));
+                }
 
                 if (allredraw)
                 {
@@ -402,11 +257,11 @@ namespace KCore
             }
             catch (ArgumentException e) when (e.TargetSite.Name == "SetCursorPosition")
             {
-                resize = true;
+                //resize = true;
             }
             catch (ArgumentOutOfRangeException e) when (e.TargetSite.Name == "SetBufferSize")
             {
-                resize = true;
+                //resize = true;
             }
 
             if (!needshowing && !Terminal.WindowIsActive)
@@ -415,6 +270,12 @@ namespace KCore
                 needshowing = true;
             }
             if (Terminal.UpdatesPerSecond > 0) System.Threading.Thread.Sleep(Terminal.UPS);
+            if (ShowUPS)
+            {
+                LastStartExecuted = LastEndExecuted;
+                LastEndExecuted = stopwatch.Elapsed;
+            }
+
 
             if (ManualStop)
             {
@@ -519,10 +380,8 @@ namespace KCore
 
         public void CancelAllActions()
         {
-            for (var i = 0; i < reactions.Length; i++)
-            {
-                if (!reactions[i].isredrawer && !reactions[i].multicondition) Reactions[reactions[i].reference] = false;
-            }
+            for (var i = 0; i < requests.Length; i++)
+                if (!requests[i].AllRedraw) requests[i].Cancel();
         }
 
         public void Close() => status = false;
@@ -616,21 +475,28 @@ namespace KCore
         protected bool AllowedRestartAfterException = true;
         protected bool AllowedDashboard = AllowDashboardInAllForms;
         private static bool ManualStop = false;
-        const string ConsoleShellTextLeft = "KCore " + KCoreVersion.VersionWithoutRevision + " ";
+        const string ConsoleShellTextLeft = "KCore " + KCoreVersion.Major + "." + KCoreVersion.Minor + " ";
         const string ConsoleShellTextRight = "Dashboard: F12";
         private static bool ManualRedraw = false;
         private static bool RaiseException = false;
+        private static bool ShowUPS = false;
         public bool ManualLock = false;
         protected virtual bool IsRecursiveForm() => false;
-        protected static Form DashboardForm = new Dashboard();
         protected static Form ExceptionForm;
-        private static bool ActiveDashborads;
+        public static Type DashboardType = typeof(Dashboard);
+        private static bool ActiveDashboard;
         private static void ConsoleShellActivate(byte x)
         {
-            if (x == Key.F2) RaiseException = true;
-            if (x == Key.F8) ManualStop = !ManualStop;
+            if (x == Key.F7)
+            {
+                ShowUPS = !ShowUPS;
+                ManualRedraw = true;
+            }
+            if (x == Key.F8) ManualRedraw = true;
+            if (x == Key.F9) RaiseException = true;
             if (x == Key.F10) ManualRedraw = true;
-            if (Key.Control.Pressed() && x == Key.F12) ActiveDashborads = true;
+            if (x == Key.Pause) ManualStop = !ManualStop;
+            if (x == Key.F12) ActiveDashboard = true;
         }
         static Form()
         {

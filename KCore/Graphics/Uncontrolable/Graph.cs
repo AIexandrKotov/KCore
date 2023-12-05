@@ -33,7 +33,7 @@ namespace KCore.Graphics
             throw new ArgumentException();
         }
 
-        public static void ResetColor() => Console.ResetColor();
+        public static void ResetColor() => Terminal.ResetColor();
 
         public static int ConsoleWidth => FixedWindowWidth;
         public static int ConsoleHeight => FixedWindowHeight;

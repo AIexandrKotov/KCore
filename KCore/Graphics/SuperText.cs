@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Console = KCore.Terminal;
 
 namespace KCore.Graphics
 {
-    public abstract class SuperText
+    public abstract class SuperText : ICloneable
     {
         public (int, int) CachedCorner { get; set; }
         public int CachedHeight { get; set; }
@@ -193,6 +192,8 @@ namespace KCore.Graphics
 
             public bool EndlineSpace;
 
+            private SuperTextOut() { }
+
             public SuperTextOut(string text)
             {
                 Text = text;
@@ -200,12 +201,18 @@ namespace KCore.Graphics
 
             public override void Invoke()
             {
-                if (EndlineSpace || Position.Item2 > CachedHeight) return;
-                Console.Set(CachedCorner.Item1 + Position.Item1, CachedCorner.Item2 + Position.Item2);
-                Console.Write(Text);
+                //if (EndlineSpace || Position.Item2 > CachedHeight) return;
+                if (EndlineSpace) return;
+                Terminal.Set(CachedCorner.Item1 + Position.Item1, CachedCorner.Item2 + Position.Item2);
+                Terminal.Write(Text);
             }
 
             public override string ToString() => Text;
+
+            public override object Clone()
+            {
+                return MemberwiseClone();
+            }
         }
 
         public class SuperTextColorChange : SuperText
@@ -221,31 +228,31 @@ namespace KCore.Graphics
             {
                 if (Text != null && Text.Contains("disable"))
                 {
-                    if (IsBackground) Console.Back = Theme.Disabled;
-                    else Console.Back = Theme.Disabled;
+                    if (IsBackground) Terminal.Back = Theme.Disabled;
+                    else Terminal.Back = Theme.Disabled;
                 }
                 else if (Text != null && Text.Contains("error"))
                 {
-                    if (IsBackground) Console.Back = Theme.Error;
-                    else Console.Fore = Theme.Error;
+                    if (IsBackground) Terminal.Back = Theme.Error;
+                    else Terminal.Fore = Theme.Error;
                 }
                 else if (IsReset)
                 {
                     if (IsBackground)
                     {
-                        Console.ResetColor();
-                        (Console.Fore, Console.Back) = ResetColor();
+                        Terminal.ResetColor();
+                        (Terminal.Fore, Terminal.Back) = ResetColor();
                     }
                     else
                     {
-                        Console.ResetFore();
-                        Console.Fore = ResetColor().Item1;
+                        Terminal.ResetFore();
+                        Terminal.Fore = ResetColor().Item1;
                     }
                 }
                 else
                 {
-                    if (IsBackground) Console.Back = Color;
-                    else Console.Fore = Color;
+                    if (IsBackground) Terminal.Back = Color;
+                    else Terminal.Fore = Color;
                 }
             }
             public override string ToString()
@@ -262,6 +269,13 @@ namespace KCore.Graphics
 
                 return sb.ToString();
             }
+
+            public override object Clone()
+            {
+                var o = (SuperTextColorChange)MemberwiseClone();
+                o.Text = Text?.Clone<string>();
+                return o;
+            }
         }
 
         public class SuperTextNewLine : SuperText
@@ -270,6 +284,13 @@ namespace KCore.Graphics
             {
 
             }
+
+            public override object Clone()
+            {
+                return MemberwiseClone();
+            }
         }
+
+        public abstract object Clone();
     }
 }

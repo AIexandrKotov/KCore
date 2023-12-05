@@ -13,25 +13,29 @@ namespace Runner
 {
     public class Form1 : Form
     {
-        public Redrawable Row { get; set; }
-        public TextRow TextRow { get; set; }
-        public TextInput TextInput { get; set; }
+        public TextRow TextRow;
+        public TextInput TextInput;
+        public Trigger CloseTrigger;
 
         public Form1()
         {
-            TextRow = new TextRow(fillWidth: true, text: "%=>Red%Super%=>reset%row");
+            Root.AddWidget(TextRow = new TextRow(fillWidth: true, text: "%=>Red%Super%=>reset%row"));
 
-            RootWidget = Row = new Redrawable(TextRow);
             ActiveWidget = TextInput = new TextInput(this);
-
-            AddRedrawer(Row);
-
-            TextInput.OnAnyInput = () =>
+            TextInput.OnAnyInput = input =>
             {
-                TextRow.Text = TextInput.String;
-                Row.NeedRedraw = true;
+                TextRow.Text = input.String;
+                TextRow.Redraw();
             };
             TextInput.Activate(TextRow.Text);
+
+            Bind(CloseTrigger = new Trigger(this, form => form.Close()));
+        }
+
+        protected override void OnKeyDown(byte key)
+        {
+            base.OnKeyDown(key);
+            if (key == Key.Tab || key == Key.Escape) CloseTrigger.Do();
         }
     }
 }
