@@ -1,4 +1,5 @@
 ﻿using KCore.Extensions;
+using KCore.Extensions.InsteadSLThree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +56,7 @@ namespace KCore.Graphics
 
             if (alignment != TextAlignment.Left)
             {
-                for (var i = 0; i < container.Height; i++)
+                for (var i = 0; i < Terminal.FixedWindowHeight; i++)
                 {
                     var t = actions.Where(a => a is SuperTextOut st && st.Position.Item2 == i).ToArray().ConvertAll(z => (SuperTextOut)z);
 
@@ -273,7 +274,7 @@ namespace KCore.Graphics
             public override object Clone()
             {
                 var o = (SuperTextColorChange)MemberwiseClone();
-                o.Text = Text?.Clone<string>();
+                o.Text = Text?.ConvertAll(x => x?.Clone() as string);
                 return o;
             }
         }

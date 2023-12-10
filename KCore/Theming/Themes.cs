@@ -16,6 +16,7 @@ namespace KCore.Theming
             Error = ConsoleColor.Red,
             Border = ConsoleColor.Gray,
         };
+        public static readonly Dictionary<string, ColorTheme> Other = new Dictionary<string, ColorTheme>();
 
         public static ColorTheme Current { get; set; } = Default;
     }

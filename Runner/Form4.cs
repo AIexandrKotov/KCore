@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KCore.Graphics;
-using KCore.Extensions;
+using KCore.Extensions.InsteadSLThree;
 
 namespace Runner
 {

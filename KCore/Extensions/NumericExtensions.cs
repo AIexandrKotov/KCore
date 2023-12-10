@@ -70,25 +70,6 @@ namespace KCore.Extensions
 
         public static int Trunc(this float f) => Convert.ToInt32(Math.Truncate(f));
 
-        public static string ToNormalDate(this DateTime date)
-        {
-            return date.Day.ToString().PadLeft(2, '0') + '.' + date.Month.ToString().PadLeft(2, '0') + '.' + date.Year;
-        }
-
-        public static string ToNormalTime(this DateTime time)
-        {
-            return time.Hour + ":" + time.Minute.ToString().PadLeft(2, '0');
-        }
-
-        public static string ToNormalTime(this TimeSpan time)
-        {
-            return time.Hours + ":" + time.Minutes.ToString().PadLeft(2, '0');
-        }
-
-        public static string ToNormalTime(this DateTimeOffset time)
-        {
-            return time.Hour + ":" + time.Minute.ToString().PadLeft(2, '0');
-        }
         public static double Power(this double x, double a) => Math.Pow(x, a);
         public static double Power(this int x, int a) => Math.Pow(x, a);
         public static double ToDegrees(this double x) => x * 180 / Math.PI;

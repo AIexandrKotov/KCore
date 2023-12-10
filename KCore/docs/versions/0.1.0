@@ -1,0 +1,11 @@
+------ KCore 0.1.0 ------ [10.12.23]
+The first version. Not everything from KTXCore has been adapted yet.
+Main from KTXCore:
+    - Transition animations
+    - Graphics architecture
+New:
+    - Widgets, new Forms, Requests instead Reactions
+New widgets:
+    - Window, BoxLayout, ListBox
+    - WithVerticalScroll, VerticalScroll, Padding
+    - ScrollableText, TextWidget, TextRow

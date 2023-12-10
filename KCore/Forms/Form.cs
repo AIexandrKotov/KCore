@@ -434,8 +434,9 @@ namespace KCore
         /// </summary>
         /// <param name="type">Тип-наследник блока</param>
         /// <returns>Первый найденный блок</returns>
-        protected Form FindFirst(Type type)
+        protected Form FindFirst<T>()
         {
+            var type = typeof(T);
             if (!IsFormType(type)) throw new Exception("BaseType is not Form");
 
             return InternalFindFirst(type);
@@ -446,8 +447,9 @@ namespace KCore
         /// </summary>
         /// <param name="type">Тип-наследник блока</param>
         /// <returns>Первый найденный блок, либо null</returns>
-        protected Form FindFirstOrDefault(Type type)
+        protected Form FindFirstOrDefault<T>()
         {
+            var type = typeof(T);
             if (!IsFormType(type)) throw new Exception("BaseType is not Form");
 
             return InternalFindFirstOrDefault(type);
@@ -475,7 +477,7 @@ namespace KCore
         protected bool AllowedRestartAfterException = true;
         protected bool AllowedDashboard = AllowDashboardInAllForms;
         private static bool ManualStop = false;
-        const string ConsoleShellTextLeft = "KCore " + KCoreVersion.Major + "." + KCoreVersion.Minor + " ";
+        internal static string ConsoleShellTextLeft = "KCore " + Dashboard.Version.Major + "." + Dashboard.Version.Minor + " ";
         const string ConsoleShellTextRight = "Dashboard: F12";
         private static bool ManualRedraw = false;
         private static bool RaiseException = false;
@@ -493,9 +495,9 @@ namespace KCore
                 ManualRedraw = true;
             }
             if (x == Key.F8) ManualRedraw = true;
-            if (x == Key.F9) RaiseException = true;
+            //if (x == Key.F9) RaiseException = true;
+            if (x == Key.F9) ManualStop = !ManualStop;
             if (x == Key.F10) ManualRedraw = true;
-            if (x == Key.Pause) ManualStop = !ManualStop;
             if (x == Key.F12) ActiveDashboard = true;
         }
         static Form()

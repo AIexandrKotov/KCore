@@ -43,6 +43,7 @@
     <Compile Include="CoreForms\ExceptionViewer.cs" />
     <Compile Include="CoreForms\ResizeViewer.cs" />
     <Compile Include="Extensions\GenericExtensions.cs" />
+    <Compile Include="Extensions\InsteadSLThree\SLThreeExtensions.cs" />
     <Compile Include="Extensions\NumericExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Forms\SimpleEventForm.cs" />
@@ -100,6 +101,9 @@
   <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="lucida_mixmult.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="docs\versions\0.1.0" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

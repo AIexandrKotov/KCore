@@ -82,13 +82,24 @@ namespace KCore.TerminalCore
 
             public void Write(object o) => Write(o.ToString());
 
+            private static IEnumerable<(int, int, T)> Enumerate<T>(T[,] values)
+            {
+                for (var i = 0; i < values.GetLength(0); i++)
+                {
+                    for (var j = 0; j < values.GetLength(1); j++)
+                    {
+                        yield return (i, j, values[i, j]);
+                    }
+                }
+            }
+
             public Complexive ToComplexive()
             {
                 return new Complexive()
                 {
                     Width = Width,
                     Height = Height,
-                    Pixels = Matrix.Enumerate().Where(x => !(Terminal.FixedWindowWidth - 1 == x.Item1 && Terminal.FixedWindowHeight - 1 == x.Item2)).Select(x => x.Item3).ToArray(),
+                    Pixels = Enumerate(Matrix).Where(x => !(Terminal.FixedWindowWidth - 1 == x.Item1 && Terminal.FixedWindowHeight - 1 == x.Item2)).Select(x => x.Item3).ToArray(),
                 };
             }
         }

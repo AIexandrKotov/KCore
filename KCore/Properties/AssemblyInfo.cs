@@ -2,6 +2,8 @@ using System.IO;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using KCore.Extensions.InsteadSLThree;
+using System.Globalization;
 
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
@@ -38,11 +40,36 @@ using System.Runtime.InteropServices;
 
 public static class KCoreVersion
 {
+    public class Reflected
+    {
+        public int Major { get; private set; }
+        public int Minor { get; private set; }
+        public int Build { get; private set; }
+        public int Revision { get; private set; }
+        public DateTime LastUpdate { get; private set; }
+
+        public string Version { get; private set; }
+        public string VersionWithoutRevision { get; private set; }
+
+        public Reflected()
+        {
+            var slt_version = typeof(KCoreVersion);
+            Major = int.Parse(slt_version.GetField("Major").GetValue(null).Cast<string>());
+            Minor = int.Parse(slt_version.GetField("Minor").GetValue(null).Cast<string>());
+            Build = int.Parse(slt_version.GetField("Build").GetValue(null).Cast<string>());
+            Revision = int.Parse(slt_version.GetField("Revision").GetValue(null).Cast<string>());
+            LastUpdate = new DateTime(slt_version.GetField("LastUpdate").GetValue(null).Cast<long>());
+
+            Version = Major + "." + Minor + "." + Build + "." + Revision;
+            VersionWithoutRevision = Major + "." + Minor + "." + Build;
+        }
+    }
+
     public const string Major = "0"; //vh
     public const string Minor = "1"; //vh
     public const string Build = "0"; //vh
-    public const string Revision = "499"; //vh
-    public const long LastUpdate = 638374155855187782; //vh
+    public const string Revision = "542"; //vh
+    public const long LastUpdate = 638378253949912279; //vh
 
     public const string Version = Major + "." + Minor + "." + Build + "." + Revision;
     public const string VersionWithoutRevision = Major + "." + Minor + "." + Build;

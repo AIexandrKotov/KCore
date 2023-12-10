@@ -45,7 +45,7 @@ namespace KCore.Graphics.Widgets
             var ret = new SuperText[defaultSuperText.Length];
             for (var i = 0; i < ret.Length; i++)
             {
-                ret[i] = defaultSuperText[i].CloneCast();
+                ret[i] = defaultSuperText[i].Clone() as SuperText;
                 var cc = ret[i].CachedCorner;
                 cc.Item2 -= CurrentStart;
                 ret[i].CachedCorner = cc;
@@ -82,7 +82,7 @@ namespace KCore.Graphics.Widgets
         #endregion
 
         public bool LoopedScroll = false;
-        public int MaxStart => Math.Max(0, height - Container.Height);
+        public int MaxStart => Math.Max(0, height - Container.Height - 1);
 
 
         #region Controls
@@ -192,7 +192,7 @@ namespace KCore.Graphics.Widgets
             var first = defaultSuperText.OfType<SuperText.SuperTextOut>().FirstOrDefault();
             var last = defaultSuperText.OfType<SuperText.SuperTextOut>().LastOrDefault();
             if (first == null || last == null || first == last) height = 1;
-            else height = (last.CachedCorner.Item2 + last.Position.Item2) - (first.CachedCorner.Item2 + first.Position.Item2);
+            else height = (last.CachedCorner.Item2 + last.Position.Item2) - (first.CachedCorner.Item2 + first.Position.Item2) + 1;
             CurrentStart = 0;
         }
 

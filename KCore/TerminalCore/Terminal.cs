@@ -53,6 +53,7 @@ namespace KCore
                 }
             }
         }
+        private static void UpKeyMethod(byte x) { }
 
         internal static Thread KeyThread { get; set; }
 
@@ -88,9 +89,12 @@ namespace KCore
             byte current;
             while (KeyThreadLoop)
             {
-                if (RestrictedPerfomance) Thread.Sleep(1);
-                if (!WindowIsActive) continue;
-                if (OnKeyDown == null || OnKeyUp == null) continue;
+                Thread.Sleep(1);
+                if (!WindowIsActive)
+                {
+                    Thread.Sleep(500);
+                    continue;
+                }
                 if (!onlyOneRepeation) repeation = -1;
                 for (var i = 0; i < 255; i++)
                 {
@@ -136,6 +140,7 @@ namespace KCore
             Thread.Sleep(500);
             KeyThread.Abort();
             OnKeyDown -= ManualTools;
+            OnKeyUp -= UpKeyMethod;
         }
         #endregion
 
@@ -220,7 +225,8 @@ namespace KCore
         private static readonly object syncresize = new object();
         private const string WINDOW_SIZE_TOO_SMALL_EXCEPTION_STRING = "Window size too small";
         internal static TimeSpan UPS { get; private set; } = new TimeSpan((long)(TimeSpan.TicksPerSecond / (double)DefaultUpdatesPerSecond));
-        internal static bool WindowIsActive { get => TerminalBase.FindWindow(null, Console.Title) == TerminalBase.GetForegroundWindow(); }
+        private static IntPtr ConsoleWindow;
+        internal static bool WindowIsActive { get => ConsoleWindow == TerminalBase.GetForegroundWindow(); }
 
 
         private class SetByAlignment : BoundedObject
@@ -410,6 +416,7 @@ namespace KCore
 
         public static void Init(int width, int height)
         {
+            ConsoleWindow = TerminalBase.FindWindow(null, Console.Title);
             if (width != minimalWindowWidth || height != minimalWindowHeight)
             {
                 minimalWindowWidth = width;
@@ -445,6 +452,7 @@ namespace KCore
                 Resize();
                 inited = true;
                 OnKeyDown += ManualTools;
+                OnKeyUp += UpKeyMethod;
                 Log.Logging = true;
             }
         }

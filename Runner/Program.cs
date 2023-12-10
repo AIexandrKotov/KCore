@@ -1,5 +1,6 @@
 ﻿using KCore;
 using KCore.Extensions;
+using KCore.Extensions.InsteadSLThree;
 using KCore.Forms;
 using KCore.Graphics;
 using KCore.Graphics.Widgets;
