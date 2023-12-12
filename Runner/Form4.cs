@@ -38,10 +38,9 @@ namespace Runner
                             alignment: Alignment.CenterWidth | Alignment.UpHeight)));
                     })
                 .ToList();
-            Root.AddWidget(wvs);
             Root.AddWidget(List);
             Root.AddWidget(wvs.Scroll);
-            wvs.Resize();
+            Root.AddWidget(wvs);
 
             ActiveWidget = List;
 

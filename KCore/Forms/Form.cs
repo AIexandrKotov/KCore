@@ -294,6 +294,7 @@ namespace KCore
             if (!optimized) Optimize();
 
             OnOpening();
+            Root.Resize();
             OnResize();
             var loc_status = status;
             allredraw = true;
@@ -316,6 +317,7 @@ namespace KCore
             Terminal.AddKeyUp(OnKeyUp);
 
             OnOpening();
+            Root.Resize();
             OnResize();
 
             status = true;
