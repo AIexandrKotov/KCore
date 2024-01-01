@@ -2,23 +2,20 @@
 <package >
   <metadata>
     <id>KCore</id>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <authors>Kotov</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <description>A simple but powerful shell for creating applications in the Windows console</description>
     <releaseNotes>
------- KCore 0.1.0 ------ [10.12.23]
-The first version. Not everything from KTXCore has been adapted yet.
-Main from KTXCore:
-    - Transition animations
-    - Graphics architecture
-New:
-    - Widgets, new Forms, Requests instead Reactions
+------ KCore 0.2.0 ------ [01.01.24]
+Main:
+    - New DASHBOARD
+    - Storage for KCore applications
+    - Localizations (en, ru)
+    - Inifile -> Initial
 New widgets:
-    - Window, BoxLayout, ListBox
-    - WithVerticalScroll, VerticalScroll, Padding
-    - ScrollableText, TextWidget, TextRow
+    - Panel (Form is also Panel)
     </releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>windows console shell terminal widgets</tags>

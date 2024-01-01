@@ -82,7 +82,14 @@ namespace KCore.TerminalCore
 
         static TerminalBase()
         {
-            Console.CursorVisible = false;
+            try
+            {
+                Console.CursorVisible = false;
+            }
+            catch
+            {
+
+            }
             CachedOutputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
         }
     }

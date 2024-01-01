@@ -90,6 +90,7 @@ namespace KCore.Graphics.Widgets
         {
             public WidgetScrollUp(Form form, ScrollableText widget) : base(form, widget) { }
 
+            public override void Send() => Widget.NeedScrollUp = true;
             public override void Cancel() => Widget.NeedScrollUp = false;
 
             public override bool Condition() => Widget.Visible && Widget.NeedScrollUp;
@@ -103,6 +104,7 @@ namespace KCore.Graphics.Widgets
         {
             public WidgetScrollDown(Form form, ScrollableText widget) : base(form, widget) { }
 
+            public override void Send() => Widget.NeedScrollDown = true;
             public override void Cancel() => Widget.NeedScrollDown = false;
 
             public override bool Condition() => Widget.Visible && Widget.NeedScrollDown;
@@ -116,14 +118,15 @@ namespace KCore.Graphics.Widgets
         {
             public WidgetAutoscroll(Form form, ScrollableText widget) : base(form, widget) { }
 
+            public override void Send() => Widget.NeedScrollDown = true;
             public override void Cancel() => Widget.NeedScrollDown = false;
 
-            public override bool Condition() => Widget.Visible && Widget.Autoscroll && BindedTo.FormTimer >= (Widget.lastAutoscroll + Widget.AutoscrollInterval);
+            public override bool Condition() => Widget.Visible && Widget.Autoscroll && (BindedTo as Form).FormTimer >= (Widget.lastAutoscroll + Widget.AutoscrollInterval);
 
             public override void Invoke()
             {
                 Widget.NeedScrollUp = true;
-                Widget.lastAutoscroll = BindedTo.FormTimer;
+                Widget.lastAutoscroll = (BindedTo as Form).FormTimer;
             }
         }
 

@@ -29,13 +29,13 @@ namespace Runner
             };
             TextInput.Activate(TextRow.Text);
 
-            Bind(CloseTrigger = new Trigger(this, form => form.Close()));
+            Bind(CloseTrigger = new Trigger(this, form => (form as Form).Close()));
         }
 
         protected override void OnKeyDown(byte key)
         {
             base.OnKeyDown(key);
-            if (key == Key.Tab || key == Key.Escape) CloseTrigger.Do();
+            if (key == Key.Tab || key == Key.Escape) CloseTrigger.Pull();
         }
     }
 }

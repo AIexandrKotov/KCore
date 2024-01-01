@@ -10,26 +10,26 @@ using KCore.CoreForms;
 using KCore.Graphics;
 using KCore.Graphics.Widgets;
 using System.CodeDom.Compiler;
+using KCore.Storage;
+using KCore.Tools;
 
 namespace KCore
 {
     /// <summary>
     /// Базовый тип консольных окон
     /// </summary>
-    public abstract class Form
+    public abstract class Form : BasePanel
     {
         public Form()
         {
             Root = new RootWidget(this);
         }
         #region fields and vmethods 
-        private bool status, allredraw, resize;
+        internal bool allredraw;
+
+        private bool status, resize;
 
         private bool clear;
-
-        private int redrawersstart;
-
-        private bool optimized = false;
 
         private bool needshowing = false;
 
@@ -94,73 +94,18 @@ namespace KCore
         private TimeSpan LastEndExecuted;
         public TimeSpan RealUPS => LastEndExecuted - LastStartExecuted;
 
-        private List<Request> requestList = new List<Request>();
-        private Request[] requests;
-        public Request[] Requests => requestList.ToArray();
         private readonly Stopwatch stopwatch = new Stopwatch();
 
         public Form Reference { get; set; } = null;
-
-        private void Optimize()
-        {
-            if (requestList?.Count > 0)
-            {
-                requests = new Request[requestList.Count]; var index = 0;
-
-                for (var i = 0; i < requestList.Count; i++)
-                    if (!requestList[i].AllRedraw) requests[index++] = requestList[i];
-                for (var i = 0; i < requestList.Count; i++)
-                    if (requestList[i].AllRedraw) requests[index++] = requestList[i];
-
-                redrawersstart = Array.FindIndex(requests, x => x.AllRedraw);
-                if (redrawersstart == -1) redrawersstart = requests.Length;
-            }
-            else
-            {
-                requests = new Request[0];
-            }
-            optimized = true;
-        }
+        public override Form GetBindingForm() => this;
+        public override bool AllRedraw => allredraw;
+        protected override IList<Request> GetPanelBinds() => requestList;
 
         public readonly RootWidget Root;
         /// <summary>
         /// IControlable, управление которым будет перехвачено в данный момент
         /// </summary>
         public IControlable ActiveWidget { get; set; }
-
-        #region Binds
-        public void Bind(Request request)
-        {
-            requestList.Add(request);
-            optimized = false;
-        }
-        public void Bind(params Request[] requests)
-        {
-            requestList.AddRange(requests);
-            optimized = false;
-        }
-        public void Bind(Widget widget)
-        {
-            requestList.AddRange(widget.InternalGetBinds(this));
-            optimized = false;
-        }
-        public void Bind(params Widget[] widgets)
-        {
-            for (var i = 0; i < widgets.Length; i++)
-                requestList.AddRange(widgets[i].InternalGetBinds(this));
-            optimized = false;
-        }
-        public void Unbind(Request request)
-        {
-            requestList.Remove(request);
-            optimized = false;
-        }
-        public void Unbind(Widget widget)
-        {
-            requestList.RemoveAll(x => x is Widget.IWidgetRequest wr && wr.Widget == widget);
-            optimized = false;
-        }
-        #endregion
 
         #region Main Logic
         private void MainLoop(bool exit_after = true)
@@ -257,11 +202,11 @@ namespace KCore
             }
             catch (ArgumentException e) when (e.TargetSite.Name == "SetCursorPosition")
             {
-                //resize = true;
+                Log.Add(e.ToString());
             }
             catch (ArgumentOutOfRangeException e) when (e.TargetSite.Name == "SetBufferSize")
             {
-                //resize = true;
+                Log.Add(e.ToString());
             }
 
             if (!needshowing && !Terminal.WindowIsActive)
@@ -311,6 +256,7 @@ namespace KCore
 
         public void Start(bool redirected = false)
         {
+            KCoreStorage.Init();
             if (!optimized) Optimize();
 
             Terminal.AddKeyDown(OnKeyDown);
@@ -332,6 +278,7 @@ namespace KCore
                 }
                 catch (Exception e)
                 {
+                    Log.Add(e.ToString());
                     var ev = new ExceptionViewer(e, AllowedRestartAfterException);
                     this.StartAnimation(ev);
                     if (!ev.Restarted) status = false;
@@ -480,10 +427,10 @@ namespace KCore
         protected bool AllowedDashboard = AllowDashboardInAllForms;
         private static bool ManualStop = false;
         internal static string ConsoleShellTextLeft = "KCore " + Dashboard.Version.Major + "." + Dashboard.Version.Minor + " ";
-        const string ConsoleShellTextRight = "Dashboard: F12";
+        internal static string ConsoleShellTextRight => Localization.Current["KCore_DASH"];
         private static bool ManualRedraw = false;
         private static bool RaiseException = false;
-        private static bool ShowUPS = false;
+        internal static bool ShowUPS = false;
         public bool ManualLock = false;
         protected virtual bool IsRecursiveForm() => false;
         protected static Form ExceptionForm;
@@ -491,13 +438,7 @@ namespace KCore
         private static bool ActiveDashboard;
         private static void ConsoleShellActivate(byte x)
         {
-            if (x == Key.F7)
-            {
-                ShowUPS = !ShowUPS;
-                ManualRedraw = true;
-            }
             if (x == Key.F8) ManualRedraw = true;
-            //if (x == Key.F9) RaiseException = true;
             if (x == Key.F9) ManualStop = !ManualStop;
             if (x == Key.F10) ManualRedraw = true;
             if (x == Key.F12) ActiveDashboard = true;

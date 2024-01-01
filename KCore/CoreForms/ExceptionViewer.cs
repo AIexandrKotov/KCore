@@ -152,10 +152,10 @@ namespace KCore.CoreForms
         private Trigger ExitRequest, RestartRequest, ChangeStyleRequest;
         protected override void OnKeyDown(byte key)
         {
-            if (key == Key.F5) ChangeStyleRequest.Do();
-            else if (key == Key.Escape) ExitRequest.Do();
-            else if (key == Key.Enter || key == Key.E || key == Key.Spacebar) RestartRequest.Do();
-            else if (key != Key.Escape && key > 2) RestartRequest.Do();
+            if (key == Key.F5) ChangeStyleRequest.Pull();
+            else if (key == Key.Escape) ExitRequest.Pull();
+            else if (key == Key.Enter || key == Key.E || key == Key.Spacebar) RestartRequest.Pull();
+            else if (key != Key.Escape && key > 2) RestartRequest.Pull();
         }
     }
 }

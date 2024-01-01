@@ -63,9 +63,13 @@
     <Compile Include="Graphics\GraphicsExtensions.cs" />
     <Compile Include="Graphics\BoundedObject.cs" />
     <Compile Include="Forms\Request.cs" />
+    <Compile Include="Graphics\Widgets\Canvas.cs" />
+    <Compile Include="Graphics\Widgets\Interfaces\IResizeble.cs" />
     <Compile Include="Graphics\Widgets\ListBox.cs" />
+    <Compile Include="Graphics\Widgets\Panel.cs" />
     <Compile Include="Graphics\Widgets\RootWidget.cs" />
-    <Compile Include="Graphics\Refactoring\SuperText.cs" />
+    <Compile Include="Refactoring\KCoreDataFile.cs" />
+    <Compile Include="Refactoring\SuperText.cs" />
     <Compile Include="Graphics\Widgets\Widget.cs" />
     <Compile Include="Graphics\Special\TextInput.cs" />
     <Compile Include="Graphics\Uncontrolable\Graph.cs" />
@@ -88,6 +92,7 @@
     <Compile Include="Graphics\Widgets\Text\VerticalScroll.cs" />
     <Compile Include="Graphics\Widgets\Window.cs" />
     <Compile Include="Key.cs" />
+    <Compile Include="Refactoring\Test.cs" />
     <Compile Include="TerminalCore\TerminalBase.cs" />
     <Compile Include="TerminalCore\TerminalRedirected.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,15 +100,20 @@
     <Compile Include="Theming\Theme.cs" />
     <Compile Include="Theming\ColorTheme.cs" />
     <Compile Include="Theming\Themes.cs" />
-    <Compile Include="Tools\Inifile.cs" />
+    <Compile Include="Tools\Initial.cs" />
     <Compile Include="Tools\Log.cs" />
+    <Compile Include="__\KCoreStorage.cs" />
+    <Compile Include="__\Localization.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="lucida_mixmult.ini" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="docs\versions\0.1.0" />
+    <EmbeddedResource Include="docs\versions\0.1.0" />
+    <EmbeddedResource Include="__\Localizations\en.ini" />
+    <EmbeddedResource Include="__\Localizations\ru.ini" />
+    <EmbeddedResource Include="docs\versions\0.2.0" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

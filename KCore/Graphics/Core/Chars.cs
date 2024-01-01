@@ -1,6 +1,8 @@
 ﻿using KCore.Extensions;
+using KCore.Extensions.InsteadSLThree;
 using KCore.Tools;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -8,7 +10,7 @@ namespace KCore.Graphics.Core
 {
     public static class Chars
     {
-        public static Dictionary<char, float> MixingMultipliers { get; private set; }
+        public static readonly Dictionary<char, float> MixingMultipliers;
 
         public static float GetMixingMultiplier(this char c) => MixingMultipliers.ContainsKey(c) ? MixingMultipliers[c] : 0;
 
@@ -17,8 +19,8 @@ namespace KCore.Graphics.Core
             var assembly = Assembly.GetExecutingAssembly();
             using (var stream = assembly.GetManifestResourceStream("KCore.lucida_mixmult.ini"))
             {
-                var ini = Inifile.ReadIniStream(stream);
-                MixingMultipliers = ini.Value["MAIN"].Keys.ToArray().ToDictionary(x => (char)x.ToInt32(), x => ini.Value["MAIN"][x].ToFloat());
+                var ini = Initial.FromIniText(stream.ReadString());
+                MixingMultipliers = ini["MAIN"].ToDictionary(x => (char)x.Key.ToInt32(), x => float.Parse(x.Value, CultureInfo.InvariantCulture));
             }
         }
     }

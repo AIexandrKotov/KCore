@@ -14,6 +14,7 @@ namespace Runner
     public class Choosing : Form
     {
         public ListBox List;
+        public Trigger CloseTrigger;
         public Trigger EnterTrigger;
         public static Type[] Forms;
 
@@ -45,7 +46,8 @@ namespace Runner
             Root.AddWidget(wvs);
             Root.AddWidget(List);
             Root.AddWidget(wvs.Scroll);
-            Bind(EnterTrigger = new Trigger(this, form => form.RealizeAnimation(Activator.CreateInstance(Forms[List.Position]) as Form)));
+            Bind(CloseTrigger = new Trigger(this, form => { if ((form as Form).Reference?.GetType() == typeof(Choosing)) (form as Form).Close(); }));
+            Bind(EnterTrigger = new Trigger(this, form => (form as Form).RealizeAnimation(Activator.CreateInstance(Forms[List.Position]) as Form)));
             wnd.Resize();
 
             ActiveWidget = List;
@@ -54,7 +56,8 @@ namespace Runner
         protected override void OnKeyDown(byte key)
         {
             base.OnKeyDown(key);
-            if (key == Key.Enter || key == Key.E) EnterTrigger.Do();
+            if (key == Key.Enter || key == Key.E) EnterTrigger.Pull();
+            if (key == Key.Escape || key == Key.Tab) CloseTrigger.Pull();
         }
     }
 

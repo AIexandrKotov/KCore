@@ -7,7 +7,8 @@ namespace KCore.Graphics
     public class RootWidget : Widget, INestedWidgets
     {
         public readonly Form Form;
-        internal List<Widget> Childs { get; set; } = new List<Widget>();
+        protected List<Widget> Childs { get; set; } = new List<Widget>();
+        public Widget[] GetChilds() => Childs.ToArray();
 
         internal RootWidget(Form form)
             : base(0, 0, null, LeftUpAlignment, true, true)

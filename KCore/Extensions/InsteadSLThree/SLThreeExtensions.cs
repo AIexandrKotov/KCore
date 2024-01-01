@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +11,20 @@ namespace KCore.Extensions.InsteadSLThree
 {
     public static class SLThreeExtensions
     {
+        public static string ReadString(this Stream stream)
+        {
+            using (var sr = new StreamReader(stream))
+            {
+                return sr.ReadToEnd();
+            }
+        }
+        public static string[] ReadStrings(this Stream stream)
+        {
+            using (var sr = new StreamReader(stream))
+            {
+                return sr.ReadToEnd().Split(new string[1] { Environment.NewLine }, StringSplitOptions.None);
+            }
+        }
         public static string JoinIntoString<T>(this IEnumerable<T> e, string delim)
         {
             var g = e.GetEnumerator();
@@ -51,6 +66,22 @@ namespace KCore.Extensions.InsteadSLThree
         {
             var comp = Comparer<TKey>.Default;
             return enumerable.Aggregate((max, x) => comp.Compare(selector(x), selector(max)) > 0 ? x : max);
+        }
+
+        public static IEnumerable<T[]> Batch<T>(this IEnumerable<T> enumerable, int size)
+        {
+            var buf = new List<T>();
+            foreach (var elem in enumerable)
+            {
+                buf.Add(elem);
+                if (buf.Count == size)
+                {
+                    yield return buf.ToArray();
+                    buf.Clear();
+                }
+            }
+            if (buf.Count > 0)
+                yield return buf.ToArray();
         }
     }
 }

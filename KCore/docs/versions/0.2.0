@@ -1,0 +1,8 @@
+------ KCore 0.2.0 ------ [01.01.24]
+Main:
+    - New DASHBOARD
+    - Storage for KCore applications
+    - Localizations (en, ru)
+    - Inifile -> Initial
+New widgets:
+    - Panel (Form is also Panel)

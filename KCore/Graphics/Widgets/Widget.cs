@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 
 namespace KCore.Graphics
 {
-    public abstract class Widget : BoundedObject
+
+    public abstract class Widget : BoundedObject, IResizeble
     {
         public Widget(
-            int left = 0, int top = 0, IContainer container = null, Alignment? alignment = null, bool fillWidth = true, bool fillHeight = true) 
+            int left = 0, int top = 0, IContainer container = null, Alignment? alignment = null, bool fillWidth = true, bool fillHeight = true)
             : base(left, top, container, alignment, fillWidth, fillHeight)
         {
 
@@ -29,7 +30,7 @@ namespace KCore.Graphics
         }
 
         [DebuggerDisplay("[{Widget.GetType().Name,nq}] {GetType().Name.Replace(\"Widget\", \"\"),nq}")]
-        public abstract class WidgetRequest<T> : Request, IWidgetRequest where T: Widget
+        public abstract class WidgetRequest<T> : Request, IWidgetRequest where T : Widget
         {
             public T Widget;
             public WidgetRequest(Form form, T widget) : base(form)
@@ -45,6 +46,7 @@ namespace KCore.Graphics
 
             public override bool AllRedraw => true;
             public override bool Condition() => Widget.RedrawTrigger;
+            public override void Send() => Widget.RedrawTrigger = true;
             public override void Cancel() => Widget.RedrawTrigger = false;
             public override void Invoke() => Widget.MainRedraw();
         }
@@ -52,6 +54,7 @@ namespace KCore.Graphics
         {
             public WidgetReclear(Form form, Widget widget) : base(form, widget) { }
             public override bool Condition() => Widget.ReclearTrigger;
+            public override void Send() => Widget.ReclearTrigger = true;
             public override void Cancel() => Widget.ReclearTrigger = false;
             public override void Invoke() => Widget.MainReclear();
         }
@@ -59,6 +62,7 @@ namespace KCore.Graphics
         {
             public WidgetHide(Form form, Widget widget) : base(form, widget) { }
             public override bool Condition() => Widget.HideTrigger;
+            public override void Send() => Widget.HideTrigger = true;
             public override void Cancel() => Widget.HideTrigger = false;
             public override void Invoke() => Widget.MainHide();
         }
@@ -66,6 +70,7 @@ namespace KCore.Graphics
         {
             public WidgetShow(Form form, Widget widget) : base(form, widget) { }
             public override bool Condition() => Widget.ShowTrigger;
+            public override void Send() => Widget.ShowTrigger = true;
             public override void Cancel() => Widget.ShowTrigger = false;
             public override void Invoke() => Widget.MainShow();
         }
@@ -73,6 +78,7 @@ namespace KCore.Graphics
         {
             public WidgetEnable(Form form, Widget widget) : base(form, widget) { }
             public override bool Condition() => Widget.EnableTrigger;
+            public override void Send() => Widget.EnableTrigger = true;
             public override void Cancel() => Widget.EnableTrigger = false;
             public override void Invoke() => Widget.MainEnable();
         }
@@ -80,6 +86,7 @@ namespace KCore.Graphics
         {
             public WidgetDisable(Form form, Widget widget) : base(form, widget) { }
             public override bool Condition() => Widget.DisableTrigger;
+            public override void Send() => Widget.DisableTrigger = true;
             public override void Cancel() => Widget.DisableTrigger = false;
             public override void Invoke() => Widget.MainDisable();
         }
@@ -87,6 +94,7 @@ namespace KCore.Graphics
         {
             public WidgetSelect(Form form, Widget widget) : base(form, widget) { }
             public override bool Condition() => Widget.SelectTrigger;
+            public override void Send() => Widget.SelectTrigger = true;
             public override void Cancel() => Widget.SelectTrigger = false;
             public override void Invoke() => Widget.MainSelect();
         }
@@ -94,6 +102,7 @@ namespace KCore.Graphics
         {
             public WidgetDeselect(Form form, Widget widget) : base(form, widget) { }
             public override bool Condition() => Widget.DeselectTrigger;
+            public override void Send() => Widget.DeselectTrigger = true;
             public override void Cancel() => Widget.DeselectTrigger = false;
             public override void Invoke() => Widget.MainDeselect();
         }

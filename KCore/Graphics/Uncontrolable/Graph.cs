@@ -493,6 +493,9 @@ namespace KCore.Graphics
                 Row(color, startleft, i, width);
         }
 
+        internal static void FillRectangle(ConsoleColor color, IContainer container)
+            => FillRectangle(color, container.Left, container.Top, container.Width, container.Height);
+
         public static void ChooseEffect(ConsoleColor color, int startleft, int starttop, int width, int height)
         {
             Back = color;

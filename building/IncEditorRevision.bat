@@ -1,0 +1,1 @@
+"../building/vh.exe" "../Editor/Properties/AssemblyInfo.cs" "revision++"

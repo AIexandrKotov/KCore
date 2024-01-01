@@ -71,6 +71,7 @@ namespace KCore.Graphics.Widgets
             public WidgetScrollUp(Form form, ListBox widget) : base(form, widget) { }
             public override bool Condition() => Widget.NeedScrollUp;
             public override void Cancel() => Widget.NeedScrollUp = false;
+            public override void Send() => Widget.NeedScrollUp = true;
             public override void Invoke() => Widget.ScrollUp();
         }
         private class WidgetScrollDown : WidgetRequest<ListBox>
@@ -78,6 +79,7 @@ namespace KCore.Graphics.Widgets
             public WidgetScrollDown(Form form, ListBox widget) : base(form, widget) { }
             public override bool Condition() => Widget.NeedScrollDown;
             public override void Cancel() => Widget.NeedScrollDown = false;
+            public override void Send() => Widget.NeedScrollDown = true;
             public override void Invoke() => Widget.ScrollDown();
         }
         private bool SelectingRedrawTrigger;
@@ -89,6 +91,7 @@ namespace KCore.Graphics.Widgets
 
             public override bool AllRedraw => true;
             public override void Cancel() => Widget.SelectingRedrawTrigger = false;
+            public override void Send() => Widget.SelectingRedrawTrigger = true;
             public override bool Condition() => Widget.SelectingRedrawTrigger;
             public override void Invoke() => Widget.SelectingRedraw();
         }

@@ -1,4 +1,5 @@
-﻿using KCore.CoreForms;
+﻿using KCore.Storage;
+using KCore.CoreForms;
 using KCore.Graphics;
 using KCore.Graphics.Core;
 using KCore.TerminalCore;
@@ -13,6 +14,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace KCore
 {
@@ -38,27 +40,12 @@ namespace KCore
         private static int cached_ups = 70;
         private static void ManualTools(byte x)
         {
-            if (x == Key.F2) WindowSizeExternalManage = !WindowSizeExternalManage;
-            if (x == Key.F4) FixedWindowWidth++;
-            if (x == Key.F6) FixedWindowHeight++;
-            if (x == Key.F3 && FixedWindowWidth > minimalWindowWidth) FixedWindowWidth--;
-            if (x == Key.F5 && FixedWindowHeight > minimalWindowHeight) FixedWindowHeight--;
-            if (x == Key.F8)
-            {
-                if (UpdatesPerSecond == 0) UpdatesPerSecond = cached_ups;
-                else
-                {
-                    cached_ups = UpdatesPerSecond;
-                    UpdatesPerSecond = 0;
-                }
-            }
         }
         private static void UpKeyMethod(byte x) { }
 
         internal static Thread KeyThread { get; set; }
 
-        private static int keywait = 20;
-        private static int keysplit = 3;
+        private static int keywait = 20, keysplit = 3;
         private static bool onlyOneRepeation = true;
 
         public static bool OnlyOneRepeation { get => onlyOneRepeation; set => onlyOneRepeation = value; }
@@ -80,8 +67,10 @@ namespace KCore
             }
         }
 
+        //public static bool KeyRestrictedPerfomance { get => restrictedPerfomance; set => restrictedPerfomance = value; }
+
         private static bool KeyThreadLoop = true;
-        private static bool RestrictedPerfomance = true;
+        private static bool restrictedPerfomance = true;
         private static void KeyProcessor()
         {
             var pressed_keys = new int[256];
@@ -139,6 +128,7 @@ namespace KCore
             KeyThreadLoop = false;
             Thread.Sleep(500);
             KeyThread.Abort();
+            Tools.Log.Abort();
             OnKeyDown -= ManualTools;
             OnKeyUp -= UpKeyMethod;
         }
@@ -412,7 +402,7 @@ namespace KCore
             Fore = Theme.Fore;
         }
 
-        public static void Init() => Init(50, 15);
+        public static void Init() => Init(80, 25);
 
         public static void Init(int width, int height)
         {

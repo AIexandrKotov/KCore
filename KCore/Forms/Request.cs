@@ -11,13 +11,14 @@ namespace KCore.Graphics
     [DebuggerDisplay("[{GetType().Name}]")]
     public abstract class Request
     {
-        private Form bindedTo;
-        public Form BindedTo => bindedTo;
+        private BasePanel bindedTo;
+        public BasePanel BindedTo => bindedTo;
         public virtual bool AllRedraw => false;
+        public abstract void Send();
         public abstract void Cancel();
         public abstract bool Condition();
         public abstract void Invoke();
-        public Request(Form form)
+        public Request(BasePanel form)
         {
             bindedTo = form;
         }
@@ -26,9 +27,9 @@ namespace KCore.Graphics
     public class Trigger : Request
     {
         private bool Request;
-        public Action<Form> InvokeDelegate;
+        public Action<BasePanel> InvokeDelegate;
 
-        public Trigger(Form form, Action<Form> invoke = null) : base(form)
+        public Trigger(BasePanel form, Action<BasePanel> invoke = null) : base(form)
         {
             InvokeDelegate = invoke ?? (f => { });
         }
@@ -39,14 +40,15 @@ namespace KCore.Graphics
             InvokeDelegate(BindedTo);
             Request = false;
         }
-        public void Do() => Request = true;
+        public void Pull() => Request = true;
 
         public override void Cancel() => Request = false;
+        public override void Send() => Request = true;
     }
 
     public class TriggerRedrawer : Trigger
     {
-        public TriggerRedrawer(Form form, Action<Form> invoke = null)
+        public TriggerRedrawer(Form form, Action<BasePanel> invoke = null)
             : base(form, invoke)
         {
 
@@ -56,7 +58,7 @@ namespace KCore.Graphics
 
     public class Redrawer : DelegateRequest
     {
-        public Redrawer(Form form, Func<Form, bool> condition = null, Action<Form> invoke = null, Action<Form> cancel = null) 
+        public Redrawer(Form form, Func<BasePanel, bool> condition = null, Action<BasePanel> invoke = null, Action<BasePanel> cancel = null) 
             : base(form, condition, invoke, cancel)
         {
 
@@ -66,11 +68,12 @@ namespace KCore.Graphics
 
     public class DelegateRequest : Request
     {
-        public Action<Form> CancelDelegate = form => { };
-        public Func<Form, bool> ConditionDelegate = form => false;
-        public Action<Form> InvokeDelegate = form => { };
+        public Action<BasePanel> CancelDelegate = form => { };
+        public Action<BasePanel> RegisterDelegate = form => { };
+        public Func<BasePanel, bool> ConditionDelegate = form => false;
+        public Action<BasePanel> InvokeDelegate = form => { };
 
-        public DelegateRequest(Form form, Func<Form, bool> condition = null, Action<Form> invoke = null, Action<Form> cancel = null) : base(form)
+        public DelegateRequest(Form form, Func<BasePanel, bool> condition = null, Action<BasePanel> invoke = null, Action<BasePanel> cancel = null) : base(form)
         {
             ConditionDelegate = condition ?? (f => true);
             InvokeDelegate = invoke ?? (f => { });
@@ -80,5 +83,6 @@ namespace KCore.Graphics
         public override bool Condition() => ConditionDelegate(BindedTo);
         public override void Invoke() => InvokeDelegate(BindedTo);
         public override void Cancel() => CancelDelegate(BindedTo);
+        public override void Send() => RegisterDelegate(BindedTo);
     }
 }

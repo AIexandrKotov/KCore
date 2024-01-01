@@ -40,7 +40,7 @@ namespace Runner
             box.AddWidget(new Window(fillWidth: true, fillHeight: true, child: box2, borderColor: ConsoleColor.Red));
             box.AddWidget(box3);
 
-            Bind(CloseTrigger = new Trigger(this, form => form.Close()));
+            Bind(CloseTrigger = new Trigger(this, form => (form as Form).Close()));
         }
 
         protected override void OnAllRedraw()
@@ -51,7 +51,7 @@ namespace Runner
         protected override void OnKeyDown(byte key)
         {
             base.OnKeyDown(key);
-            if (key == Key.Tab || key == Key.Escape) CloseTrigger.Do();
+            if (key == Key.Tab || key == Key.Escape) CloseTrigger.Pull();
         }
     }
 }
