@@ -68,8 +68,8 @@ public static class EditorVersion
     public const string Major = "0"; //vh
     public const string Minor = "1"; //vh
     public const string Build = "0"; //vh
-    public const string Revision = "53"; //vh
-    public const long LastUpdate = 638396998313907149; //vh
+    public const string Revision = "54"; //vh
+    public const long LastUpdate = 638567520733052879; //vh
 
     public const string Version = Major + "." + Minor + "." + Build + "." + Revision;
     public const string VersionWithoutRevision = Major + "." + Minor + "." + Build;

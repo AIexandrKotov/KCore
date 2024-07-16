@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runner", "Runner\Runner.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Editor", "Editor\Editor.csproj", "{7450C379-DD7C-410E-A122-A96EF8082F37}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "conpaint", "conpaint\conpaint.csproj", "{3A17AAA0-1905-4491-95AB-02564DF721CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{7450C379-DD7C-410E-A122-A96EF8082F37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7450C379-DD7C-410E-A122-A96EF8082F37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7450C379-DD7C-410E-A122-A96EF8082F37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A17AAA0-1905-4491-95AB-02564DF721CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A17AAA0-1905-4491-95AB-02564DF721CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A17AAA0-1905-4491-95AB-02564DF721CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A17AAA0-1905-4491-95AB-02564DF721CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
